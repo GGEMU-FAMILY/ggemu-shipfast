@@ -1,0 +1,153 @@
+import { createServerFn } from '@tanstack/react-start'
+
+const API_BASE_URL = 'https://ggemu.com'
+const PAGE_SIZE = 20
+
+export type Locale = 'zh-CN' | 'en' | 'ja'
+export type GameSearchSort = 'newest' | 'popular' | 'oldest' | 'name_asc'
+
+export type PublicGame = {
+  _id?: string
+  url_slug?: string
+  name?: string
+  description?: string
+  how_to_play?: string
+  developer?: string
+  released_year?: string
+  keywords?: string
+  platform?: string
+  platform_slug?: string
+  platformSlug?: string
+  categories?: Array<string>
+  languages?: Array<string>
+  players?: number
+  play_online?: number
+  downloadable?: number
+  game_cover?: string
+  likes_count?: number
+  comments_count?: number
+  views_count?: number
+  plays_count?: number
+}
+
+export type Pagination = {
+  total: number
+  page: number
+  limit: number
+  pages: number
+}
+
+export type GameSearchResult = {
+  games: Array<PublicGame>
+  pagination: Pagination
+}
+
+type GameSearchPayload = {
+  query?: string
+  locale?: Locale
+  page?: number
+  platform?: string
+  category?: string
+  sort?: GameSearchSort
+}
+
+type GameDetailPayload = {
+  id: string
+}
+
+type GameSearchResponse = {
+  success: true
+  data: Array<PublicGame>
+  pagination: Pagination
+}
+
+type GameDetailResponse = {
+  success: true
+  data: PublicGame
+}
+
+function normalizePage(page: unknown) {
+  const parsed = Number(page)
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 1
+}
+
+function normalizeLocale(locale: unknown): Locale {
+  return locale === 'en' || locale === 'ja' ? locale : 'zh-CN'
+}
+
+function normalizeSort(sort: unknown): GameSearchSort {
+  if (
+    sort === 'popular' ||
+    sort === 'oldest' ||
+    sort === 'name_asc'
+  ) {
+    return sort
+  }
+
+  return 'newest'
+}
+
+function addOptionalParam(
+  params: URLSearchParams,
+  key: string,
+  value: string | undefined,
+) {
+  const trimmed = value?.trim()
+
+  if (trimmed) {
+    params.set(key, trimmed)
+  }
+}
+
+async function fetchJson<T>(path: string, params: URLSearchParams) {
+  const response = await fetch(`${API_BASE_URL}${path}?${params.toString()}`)
+
+  if (!response.ok) {
+    throw new Error(`GGEMU API request failed with ${response.status}`)
+  }
+
+  return response.json() as Promise<T>
+}
+
+export const searchGames = createServerFn({ method: 'GET' })
+  .validator((payload: GameSearchPayload) => ({
+    query: payload.query ?? '',
+    locale: normalizeLocale(payload.locale),
+    page: normalizePage(payload.page),
+    platform: payload.platform ?? '',
+    category: payload.category ?? '',
+    sort: normalizeSort(payload.sort),
+  }))
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams({
+      page: String(data.page),
+      limit: String(PAGE_SIZE),
+      play_online: '1',
+    })
+
+    addOptionalParam(params, 'query', data.query)
+    addOptionalParam(params, 'platform', data.platform)
+    addOptionalParam(params, 'category', data.category)
+    addOptionalParam(params, 'sort', data.sort)
+
+    const result = await fetchJson<GameSearchResponse>(
+      '/api/games/search',
+      params,
+    )
+
+    return {
+      games: result.data,
+      pagination: result.pagination,
+    } satisfies GameSearchResult
+  })
+
+export const getGameDetail = createServerFn({ method: 'GET' })
+  .validator((payload: GameDetailPayload) => ({
+    id: payload.id,
+  }))
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams({ id: data.id })
+    const result = await fetchJson<GameDetailResponse>('/api/game/detail', params)
+
+    return result.data
+  })
