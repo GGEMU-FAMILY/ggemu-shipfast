@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesGameIdRouteImport } from './routes/games/$gameId'
 import { Route as LocaleTermsOfServiceRouteImport } from './routes/$locale.terms-of-service'
 import { Route as LocalePrivacyPolicyRouteImport } from './routes/$locale.privacy-policy'
+import { Route as LocalePlayMyRomRouteImport } from './routes/$locale.play-my-rom'
 import { Route as LocaleAboutRouteImport } from './routes/$locale.about'
 import { Route as GamesGameIdPlayRouteImport } from './routes/games/$gameId/play'
 import { Route as UsernameStatusStatusidRouteImport } from './routes/$username/status/$statusid'
@@ -58,6 +59,11 @@ const LocalePrivacyPolicyRoute = LocalePrivacyPolicyRouteImport.update({
   path: '/privacy-policy',
   getParentRoute: () => LocaleRoute,
 } as any)
+const LocalePlayMyRomRoute = LocalePlayMyRomRouteImport.update({
+  id: '/play-my-rom',
+  path: '/play-my-rom',
+  getParentRoute: () => LocaleRoute,
+} as any)
 const LocaleAboutRoute = LocaleAboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
@@ -244,6 +256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocalePrivacyPolicyRouteImport
       parentRoute: typeof LocaleRoute
     }
+    '/$locale/play-my-rom': {
+      id: '/$locale/play-my-rom'
+      path: '/play-my-rom'
+      fullPath: '/$locale/play-my-rom'
+      preLoaderRoute: typeof LocalePlayMyRomRouteImport
+      parentRoute: typeof LocaleRoute
+    }
     '/$locale/about': {
       id: '/$locale/about'
       path: '/about'
@@ -302,6 +321,7 @@ const LocaleGamesGameIdRouteWithChildren =
 
 interface LocaleRouteChildren {
   LocaleAboutRoute: typeof LocaleAboutRoute
+  LocalePlayMyRomRoute: typeof LocalePlayMyRomRoute
   LocalePrivacyPolicyRoute: typeof LocalePrivacyPolicyRoute
   LocaleTermsOfServiceRoute: typeof LocaleTermsOfServiceRoute
   LocaleGamesGameIdRoute: typeof LocaleGamesGameIdRouteWithChildren
@@ -309,6 +329,7 @@ interface LocaleRouteChildren {
 
 const LocaleRouteChildren: LocaleRouteChildren = {
   LocaleAboutRoute: LocaleAboutRoute,
+  LocalePlayMyRomRoute: LocalePlayMyRomRoute,
   LocalePrivacyPolicyRoute: LocalePrivacyPolicyRoute,
   LocaleTermsOfServiceRoute: LocaleTermsOfServiceRoute,
   LocaleGamesGameIdRoute: LocaleGamesGameIdRouteWithChildren,

@@ -25,8 +25,9 @@ export function formatCopy(
 export const i18n = {
   'zh-CN': {
     layout: {
-      games: '游戏库',
-      about: '关于',
+      games: '首页',
+      playMyRom: '玩本地游戏',
+      about: '关于我们',
       legal: '法律',
       privacyPolicy: '隐私政策',
       termsOfService: '服务条款',
@@ -99,8 +100,9 @@ export const i18n = {
   },
   en: {
     layout: {
-      games: 'Games',
-      about: 'About',
+      games: 'Home',
+      playMyRom: 'Play My ROM',
+      about: 'About Us',
       legal: 'Legal',
       privacyPolicy: 'Privacy Policy',
       termsOfService: 'Terms of Service',
@@ -177,8 +179,9 @@ export const i18n = {
   },
   ja: {
     layout: {
-      games: 'ゲーム',
-      about: '概要',
+      games: 'Home',
+      playMyRom: '自分の ROM をプレイ',
+      about: 'About Us',
       legal: '法的情報',
       privacyPolicy: 'プライバシーポリシー',
       termsOfService: '利用規約',

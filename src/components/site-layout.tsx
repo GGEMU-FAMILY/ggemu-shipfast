@@ -110,6 +110,12 @@ export function SiteLayout({
                   </Link>
                 </li>
                 <li>
+                  <Link params={{ locale }} to="/$locale/play-my-rom">
+                    <i className="ri-gamepad-line" />
+                    {t.playMyRom}
+                  </Link>
+                </li>
+                <li>
                   <Link params={{ locale }} to="/$locale/about">
                     <i className="ri-information-line" />
                     {t.about}
@@ -245,6 +251,14 @@ export function SiteFooter({ locale }: { locale: Locale }) {
               <Link className="link-hover link" params={{ locale }} to="/$locale">
                 <i className="ri-home-5-line mr-1" />
                 {t.games}
+              </Link>
+              <Link
+                className="link-hover link"
+                params={{ locale }}
+                to="/$locale/play-my-rom"
+              >
+                <i className="ri-gamepad-line mr-1" />
+                {t.playMyRom}
               </Link>
               <Link
                 className="link-hover link"
