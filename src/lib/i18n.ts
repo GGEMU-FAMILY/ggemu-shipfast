@@ -1,8 +1,13 @@
 import type { Locale, PublicGame } from '#/lib/ggemu'
 import { siteConfig } from '#/lib/site-config'
 
-const copyrightText = `Copyright © 2025 ${siteConfig.SITE_NAME}`
-const copyrightDisclaimer = `All the games ROM / programs are submitted by users or collected from the internet, and the copyrights belong to their respective owners. If you have any issues, please email ${siteConfig.SITE_EMAIL}, and we will remove the corresponding content.`
+function getCopyrightText() {
+  return `Copyright © 2025 ${siteConfig.SITE_NAME}`
+}
+
+function getCopyrightDisclaimer() {
+  return `All the games ROM / programs are submitted by users or collected from the internet, and the copyrights belong to their respective owners. If you have any issues, please email ${siteConfig.SITE_EMAIL}, and we will remove the corresponding content.`
+}
 
 export function normalizeLocale(value: unknown): Locale {
   return value === 'en' || value === 'ja' ? value : 'zh-CN'
@@ -27,8 +32,12 @@ export const i18n = {
       termsOfService: '服务条款',
       theme: '主题',
       language: '语言',
-      copyright: copyrightText,
-      disclaimer: copyrightDisclaimer,
+      get copyright() {
+        return getCopyrightText()
+      },
+      get disclaimer() {
+        return getCopyrightDisclaimer()
+      },
       footer:
         '直接在浏览器里游玩经典复古游戏，无需下载。覆盖掌机、主机、街机与更多平台。',
     },
@@ -83,7 +92,9 @@ export const i18n = {
     },
     about: {
       title: '关于',
-      description: `关于 ${siteConfig.SITE_NAME} 在线复古游戏网站。`,
+      get description() {
+        return `关于 ${siteConfig.SITE_NAME} 在线复古游戏网站。`
+      },
     },
   },
   en: {
@@ -95,13 +106,19 @@ export const i18n = {
       termsOfService: 'Terms of Service',
       theme: 'Theme',
       language: 'Language',
-      copyright: copyrightText,
-      disclaimer: copyrightDisclaimer,
+      get copyright() {
+        return getCopyrightText()
+      },
+      get disclaimer() {
+        return getCopyrightDisclaimer()
+      },
       footer:
         'Play classic retro games directly in your browser. No downloads required.',
     },
     home: {
-      title: siteConfig.SITE_SLOGAN,
+      get title() {
+        return siteConfig.SITE_SLOGAN
+      },
       subtitle:
         'Play classic retro games from GBA, NES, SNES, PS1, N64, Sega Genesis, Arcade and more directly in your browser. No downloads required.',
       searchPlaceholder: 'Search by game title, platform, or series...',
@@ -123,7 +140,9 @@ export const i18n = {
       featured: 'Playable retro games',
     },
     homeSeo: {
-      title: `${siteConfig.SITE_SLOGAN} | No Downloads Required`,
+      get title() {
+        return `${siteConfig.SITE_SLOGAN} | No Downloads Required`
+      },
       description:
         'Play classic retro games from GBA, NES, SNES, PS1, N64, Sega Genesis, Arcade and more directly in your browser. No downloads required.',
       keywords:
@@ -151,7 +170,9 @@ export const i18n = {
     },
     about: {
       title: 'About',
-      description: `About ${siteConfig.SITE_NAME}, a browser-based classic retro games website.`,
+      get description() {
+        return `About ${siteConfig.SITE_NAME}, a browser-based classic retro games website.`
+      },
     },
   },
   ja: {
@@ -163,8 +184,12 @@ export const i18n = {
       termsOfService: '利用規約',
       theme: 'テーマ',
       language: '言語',
-      copyright: copyrightText,
-      disclaimer: copyrightDisclaimer,
+      get copyright() {
+        return getCopyrightText()
+      },
+      get disclaimer() {
+        return getCopyrightDisclaimer()
+      },
       footer:
         'クラシックなレトロゲームをブラウザーでそのままプレイ。ダウンロードは不要です。',
     },
@@ -219,7 +244,9 @@ export const i18n = {
     },
     about: {
       title: '概要',
-      description: `ブラウザーで遊べるレトロゲームサイト ${siteConfig.SITE_NAME} について。`,
+      get description() {
+        return `ブラウザーで遊べるレトロゲームサイト ${siteConfig.SITE_NAME} について。`
+      },
     },
   },
 } satisfies Record<Locale, Record<string, Record<string, string>>>
@@ -260,8 +287,9 @@ const homeFaqs = {
       },
       {
         question: '游戏内容的版权如何处理？',
-        answer:
-          `游戏内容由用户提交或来自互联网收集，版权归原权利人所有。如需下架，请通过 ${siteConfig.SITE_EMAIL} 联系我们。`,
+        get answer() {
+          return `游戏内容由用户提交或来自互联网收集，版权归原权利人所有。如需下架，请通过 ${siteConfig.SITE_EMAIL} 联系我们。`
+        },
       },
     ],
   },
@@ -296,8 +324,9 @@ const homeFaqs = {
       },
       {
         question: 'How do copyright or removal requests work?',
-        answer:
-          `Game ROMs and programs are submitted by users or collected from the internet, and copyrights belong to their owners. Contact ${siteConfig.SITE_EMAIL} for removal requests.`,
+        get answer() {
+          return `Game ROMs and programs are submitted by users or collected from the internet, and copyrights belong to their owners. Contact ${siteConfig.SITE_EMAIL} for removal requests.`
+        },
       },
     ],
   },
@@ -332,8 +361,9 @@ const homeFaqs = {
       },
       {
         question: '著作権や削除依頼はどう扱われますか？',
-        answer:
-          `ゲーム ROM / プログラムはユーザー投稿またはインターネット上から収集されたもので、著作権は各権利者に帰属します。削除依頼は ${siteConfig.SITE_EMAIL} までご連絡ください。`,
+        get answer() {
+          return `ゲーム ROM / プログラムはユーザー投稿またはインターネット上から収集されたもので、著作権は各権利者に帰属します。削除依頼は ${siteConfig.SITE_EMAIL} までご連絡ください。`
+        },
       },
     ],
   },

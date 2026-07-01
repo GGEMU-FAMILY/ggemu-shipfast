@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-router'
 
 import { ThirdPartyScripts } from '#/components/third-party-scripts'
-import { siteConfig } from '#/lib/site-config'
+import { serializeSiteConfig, siteConfig } from '#/lib/site-config'
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
@@ -93,6 +93,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     <html lang="zh-CN">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__SITE_CONFIG__=${serializeSiteConfig()}`,
+          }}
+        />
         <ThirdPartyScripts />
       </head>
       <body>

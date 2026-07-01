@@ -19,7 +19,7 @@ import {
 } from '#/lib/ggemu'
 import { formatCopy, getHomeFaqs, getI18n, normalizeLocale } from '#/lib/i18n'
 import { siteConfig } from '#/lib/site-config'
-import { normalizeSiteTheme, siteThemes } from '#/lib/site-themes'
+import { getSiteThemes, normalizeSiteTheme } from '#/lib/site-themes'
 
 const DEFAULT_HOME_REQUEST_SIZE = 20
 const POKI_REQUEST_SIZE = 100
@@ -489,6 +489,7 @@ function PokiControlTiles({
   t: HomeCopy
 }) {
   const location = useRouterState({ select: (state) => state.location })
+  const siteThemes = getSiteThemes()
   const [theme, setTheme] = useState('light')
   const [isLocaleMenuOpen, setIsLocaleMenuOpen] = useState(false)
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)

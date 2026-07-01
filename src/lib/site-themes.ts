@@ -1,4 +1,4 @@
-import rawSiteConfig from '../../siteconfig.js'
+import { siteConfig } from './site-config'
 
 const defaultThemes = ['light', 'dark']
 
@@ -47,10 +47,12 @@ function parseSiteThemes(value: string) {
     .filter((theme) => daisyThemes.includes(theme))
 }
 
-export const siteThemes = Array.from(
-  new Set([...defaultThemes, ...parseSiteThemes(rawSiteConfig.SITE_THEMES)]),
-)
+export function getSiteThemes() {
+  return Array.from(
+    new Set([...defaultThemes, ...parseSiteThemes(siteConfig.SITE_THEMES)]),
+  )
+}
 
 export function normalizeSiteTheme(value: string | null) {
-  return value && siteThemes.includes(value) ? value : 'light'
+  return value && getSiteThemes().includes(value) ? value : 'light'
 }

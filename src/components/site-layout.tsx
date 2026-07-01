@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 import type { Locale } from '#/lib/ggemu'
 import { getI18n, normalizeLocale } from '#/lib/i18n'
 import { siteConfig } from '#/lib/site-config'
-import { normalizeSiteTheme, siteThemes } from '#/lib/site-themes'
+import { getSiteThemes, normalizeSiteTheme } from '#/lib/site-themes'
 
 export function SiteLayout({
   children,
@@ -20,6 +20,7 @@ export function SiteLayout({
 }) {
   const t = getI18n(locale).layout
   const location = useRouterState({ select: (state) => state.location })
+  const siteThemes = getSiteThemes()
   const [theme, setTheme] = useState('light')
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const [isLocaleMenuOpen, setIsLocaleMenuOpen] = useState(false)

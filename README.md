@@ -72,6 +72,22 @@ Preview the production build:
 npm run preview
 ```
 
+## Site Configuration
+
+Default site settings live in `siteconfig.js`. Runtime environment variables
+with the same names take priority over `siteconfig.js`:
+
+- `SITE_THEMES`
+- `SITE_EMAIL`
+- `SITE_NAME`
+- `SITE_SLOGAN`
+- `SITE_TEMPLATE`
+- `GGEMU_REFCODE`
+- `GOOGLE_ADSENSE_CLIENT`
+- `GOOGLE_ANALYTICS_ID`
+
+`SITE_TEMPLATE` accepts `default`, `two-column`, `poki-like`, or `features`.
+
 ## Route Generation
 
 This project uses TanStack Router file-based routing. After changing route files, regenerate the route tree:
