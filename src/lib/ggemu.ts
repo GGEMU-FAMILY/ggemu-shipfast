@@ -6,7 +6,16 @@ const PAGE_SIZE = 20
 const MAX_PAGE_SIZE = 100
 
 export type Locale = 'zh-CN' | 'en' | 'ja'
-export type GameSearchSort = 'newest' | 'popular' | 'oldest' | 'name_asc'
+export type GameSearchSort =
+  | 'newest'
+  | 'popular'
+  | 'oldest'
+  | 'name_asc'
+  | 'likes'
+  | 'plays_count'
+  | 'views'
+  | 'likes_count'
+  | 'views_count'
 
 export type PublicGame = {
   _id?: string
@@ -48,6 +57,9 @@ export type GameSearchResult = {
 export type GameDetailPageData = {
   canonicalUrl: string
   game: PublicGame
+}
+
+export type RelatedGamesData = {
   relatedByCategory: Array<PublicGame>
   relatedByDeveloper: Array<PublicGame>
 }
@@ -65,6 +77,12 @@ type GameSearchPayload = {
 type GameDetailPayload = {
   id: string
   locale?: Locale
+}
+
+type RelatedGamesPayload = {
+  category?: string
+  currentId: string
+  developer?: string
 }
 
 type GameSearchResponse = {
@@ -101,7 +119,12 @@ function normalizeSort(sort: unknown): GameSearchSort {
   if (
     sort === 'popular' ||
     sort === 'oldest' ||
-    sort === 'name_asc'
+    sort === 'name_asc' ||
+    sort === 'likes' ||
+    sort === 'plays_count' ||
+    sort === 'views' ||
+    sort === 'likes_count' ||
+    sort === 'views_count'
   ) {
     return sort
   }
@@ -255,17 +278,20 @@ export const getGameDetailPageData = createServerFn({ method: 'GET' })
     const params = new URLSearchParams({ id: data.id })
     const result = await fetchJson<GameDetailResponse>('/api/game/detail', params)
     const game = result.data
-    const currentId = getGameId(game) || data.id
     const origin = getRequestUrl({ xForwardedHost: true }).origin
-    const related = await fetchRelatedGames({
-      category: game.categories?.[0],
-      currentId,
-      developer: game.developer,
-    })
 
     return {
       canonicalUrl: getAbsoluteGameUrl(origin, data.locale, game, data.id),
       game,
-      ...related,
     } satisfies GameDetailPageData
+  })
+
+export const getRelatedGamePageData = createServerFn({ method: 'GET' })
+  .validator((payload: RelatedGamesPayload) => ({
+    category: payload.category,
+    currentId: payload.currentId,
+    developer: payload.developer,
+  }))
+  .handler(async ({ data }) => {
+    return fetchRelatedGames(data) satisfies Promise<RelatedGamesData>
   })

@@ -1,4 +1,5 @@
 import {
+  Await,
   Link,
   Outlet,
   createFileRoute,
@@ -7,7 +8,12 @@ import {
 } from '@tanstack/react-router'
 
 import { SiteLayout } from '#/components/site-layout'
-import { getGameDetailPageData, type Locale, type PublicGame } from '#/lib/ggemu'
+import {
+  getGameDetailPageData,
+  getRelatedGamePageData,
+  type Locale,
+  type PublicGame,
+} from '#/lib/ggemu'
 import {
   buildGameDetailSeo,
   getGameDetailFaqs,
@@ -27,10 +33,23 @@ export const Route = createFileRoute('/$locale/games/$gameId')({
       to: '/$locale/games/$gameId',
     })
   },
-  loader: ({ params }) =>
-    getGameDetailPageData({
+  loader: async ({ params }) => {
+    const detail = await getGameDetailPageData({
       data: { id: params.gameId, locale: normalizeLocale(params.locale) },
-    }),
+    })
+    const currentId = getGameRouteId(detail.game) || params.gameId
+
+    return {
+      ...detail,
+      relatedGamesPromise: getRelatedGamePageData({
+        data: {
+          category: detail.game.categories?.[0],
+          currentId,
+          developer: detail.game.developer,
+        },
+      }),
+    }
+  },
   head: ({ loaderData, params }) => {
     if (!loaderData) {
       return {}
@@ -217,7 +236,7 @@ function removeEmptySchemaValues<T extends Record<string, unknown>>(schema: T) {
 }
 
 function LocalizedGameDetailPage() {
-  const { game, relatedByCategory, relatedByDeveloper } = Route.useLoaderData()
+  const { game, relatedGamesPromise } = Route.useLoaderData()
   const { gameId, locale } = Route.useParams()
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const lang = normalizeLocale(locale)
@@ -225,7 +244,6 @@ function LocalizedGameDetailPage() {
   const categories = game.categories ?? []
   const languages = game.languages ?? []
   const faqItems = getGameDetailFaqs(game, lang)
-  const relatedGames = getRelatedGames(relatedByCategory, relatedByDeveloper)
 
   if (pathname.endsWith('/play')) {
     return <Outlet />
@@ -317,7 +335,18 @@ function LocalizedGameDetailPage() {
           <ContentPanel title={t.overview} value={game.description} />
           <ContentPanel title={t.howToPlay} value={game.how_to_play} />
           <FaqSection items={faqItems} title={t.faq} />
-          <RelatedGameSection games={relatedGames} lang={lang} title={t.relatedGames} />
+          <Await promise={relatedGamesPromise} fallback={<RelatedGamesFallback title={t.relatedGames} />}>
+            {(related) => (
+              <RelatedGameSection
+                games={getRelatedGames(
+                  related.relatedByCategory,
+                  related.relatedByDeveloper,
+                )}
+                lang={lang}
+                title={t.relatedGames}
+              />
+            )}
+          </Await>
         </div>
 
         <aside className="flex flex-col gap-4">
@@ -411,6 +440,28 @@ function RelatedGameSection({
       <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {games.map((game) => (
           <RelatedGameCard game={game} key={game.url_slug ?? game._id} lang={lang} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function RelatedGamesFallback({ title }: { title: string }) {
+  return (
+    <section>
+      <h2 className="text-xl font-semibold">{title}</h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            className="overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm"
+            key={index}
+          >
+            <div className="aspect-[4/3] animate-pulse bg-base-300" />
+            <div className="space-y-2 p-3">
+              <div className="h-4 w-4/5 animate-pulse rounded bg-base-300" />
+              <div className="h-3 w-1/2 animate-pulse rounded bg-base-300" />
+            </div>
+          </div>
         ))}
       </div>
     </section>

@@ -9,10 +9,12 @@ import { normalizeSiteTheme, siteThemes } from '#/lib/site-themes'
 
 export function SiteLayout({
   children,
+  headerActions,
   hideHeaderNav = false,
   locale,
 }: {
   children: ReactNode
+  headerActions?: ReactNode
   hideHeaderNav?: boolean
   locale: Locale
 }) {
@@ -117,6 +119,8 @@ export function SiteLayout({
           )}
 
           <div className="navbar-end gap-2">
+            {headerActions}
+
             <details
               className="dropdown dropdown-end"
               onToggle={(event) => setIsThemeMenuOpen(event.currentTarget.open)}
