@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ggemu-fastship",
+  "name": "ggemu-shipfast",
   "compatibility_date": "2026-07-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry"
