@@ -490,6 +490,8 @@ function PokiControlTiles({
 }) {
   const location = useRouterState({ select: (state) => state.location })
   const [theme, setTheme] = useState('light')
+  const [isLocaleMenuOpen, setIsLocaleMenuOpen] = useState(false)
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const themeMenuRef = useRef<HTMLDetailsElement>(null)
   const localeMenuRef = useRef<HTMLDetailsElement>(null)
 
@@ -501,7 +503,33 @@ function PokiControlTiles({
     document.documentElement.dataset.theme = storedTheme
   }, [])
 
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      const target = event.target
+
+      if (!(target instanceof Node)) {
+        return
+      }
+
+      if (
+        !localeMenuRef.current?.contains(target) &&
+        !themeMenuRef.current?.contains(target)
+      ) {
+        setIsLocaleMenuOpen(false)
+        setIsThemeMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+    }
+  }, [])
+
   function handleLocaleChange(nextLocale: Locale) {
+    setIsLocaleMenuOpen(false)
+
     const nextPath = location.pathname.replace(
       /^\/(zh-CN|en|ja)(?=\/|$)/,
       `/${nextLocale}`,
@@ -512,9 +540,9 @@ function PokiControlTiles({
 
   function handleThemeChange(nextTheme: string) {
     setTheme(nextTheme)
+    setIsThemeMenuOpen(false)
     document.documentElement.dataset.theme = nextTheme
     window.localStorage.setItem('retro-games-theme', nextTheme)
-    themeMenuRef.current?.removeAttribute('open')
   }
 
   return (
@@ -534,8 +562,20 @@ function PokiControlTiles({
       </Link>
 
       <div className="grid h-[40px] grid-cols-3 divide-x divide-slate-200">
-        <details className="dropdown" ref={localeMenuRef}>
-          <summary className="grid h-[40px] cursor-pointer list-none place-items-center text-xl text-sky-600 transition hover:bg-sky-50">
+        <details
+          className="dropdown"
+          onToggle={(event) => setIsLocaleMenuOpen(event.currentTarget.open)}
+          open={isLocaleMenuOpen}
+          ref={localeMenuRef}
+        >
+          <summary
+            className="grid h-[40px] cursor-pointer list-none place-items-center rounded-bl-2xl text-xl text-sky-600 transition hover:bg-sky-50"
+            onClick={(event) => {
+              event.preventDefault()
+              setIsLocaleMenuOpen((isOpen) => !isOpen)
+              setIsThemeMenuOpen(false)
+            }}
+          >
             <i className="ri-global-line" />
           </summary>
           <ul className="menu dropdown-content z-50 mt-2 w-40 rounded-box bg-base-100 p-2 shadow-xl">
@@ -553,8 +593,20 @@ function PokiControlTiles({
           </ul>
         </details>
 
-        <details className="dropdown" ref={themeMenuRef}>
-          <summary className="grid h-[40px] cursor-pointer list-none place-items-center text-xl text-violet-600 transition hover:bg-violet-50">
+        <details
+          className="dropdown"
+          onToggle={(event) => setIsThemeMenuOpen(event.currentTarget.open)}
+          open={isThemeMenuOpen}
+          ref={themeMenuRef}
+        >
+          <summary
+            className="grid h-[40px] cursor-pointer list-none place-items-center text-xl text-violet-600 transition hover:bg-violet-50"
+            onClick={(event) => {
+              event.preventDefault()
+              setIsThemeMenuOpen((isOpen) => !isOpen)
+              setIsLocaleMenuOpen(false)
+            }}
+          >
             <i className="ri-palette-line" />
           </summary>
           <ul className="menu dropdown-content z-50 mt-2 max-h-96 w-56 overflow-y-auto rounded-box bg-base-100 p-2 shadow-xl">
@@ -578,7 +630,7 @@ function PokiControlTiles({
 
         <button
           aria-label={t.search}
-          className="grid h-[40px] place-items-center text-xl text-blue-600 transition hover:bg-blue-50"
+          className="grid h-[40px] place-items-center rounded-br-2xl text-xl text-blue-600 transition hover:bg-blue-50"
           onClick={onToggleSearch}
           type="button"
         >
