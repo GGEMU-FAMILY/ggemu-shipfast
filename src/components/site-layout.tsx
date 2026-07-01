@@ -84,10 +84,10 @@ export function SiteLayout({
               </span>
               <span className="leading-tight">
                 <span className="block text-lg font-semibold tracking-wide">
-                  {siteConfig.name}
+                  {siteConfig.SITE_NAME}
                 </span>
                 <span className="block text-xs text-base-content/55">
-                  {siteConfig.slogan}
+                  {siteConfig.SITE_SLOGAN}
                 </span>
               </span>
             </Link>
@@ -190,60 +190,68 @@ export function SiteLayout({
 
       {children}
 
-      <footer className="border-t border-base-300 bg-base-100">
-        <div className="mx-auto max-w-7xl px-4 py-8 text-sm text-base-content/70 sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-[1.5fr_1fr_1fr] md:items-start">
-            <section className="max-w-md">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-lg text-primary-content">
-                  <i className="ri-gamepad-line" />
-                </span>
-                <div>
-                  <p className="text-base font-semibold text-base-content">
-                    {siteConfig.name}
-                  </p>
-                </div>
-              </div>
-              <p className="mt-4 leading-6">{t.footer}</p>
-              <a
-                className="mt-4 badge badge-outline badge-primary h-auto gap-2 px-3 py-2"
-                href="https://ggemu.com"
-                target="_blank"
-              >
-                <i className="ri-flashlight-line" />
-                Built with GGEMU
-              </a>
-            </section>
-
-            <nav>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-base-content/45">
-                Explore
-              </p>
-              <div className="flex flex-col items-start gap-2">
-                <Link className="link-hover link" params={{ locale }} to="/$locale">
-                  <i className="ri-home-5-line mr-1" />
-                  {t.games}
-                </Link>
-                <Link
-                  className="link-hover link"
-                  params={{ locale }}
-                  to="/$locale/about"
-                >
-                  <i className="ri-information-line mr-1" />
-                  {t.about}
-                </Link>
-              </div>
-            </nav>
-          </div>
-
-          <div className="mt-8 border-t border-base-300 pt-5">
-            <p className="font-medium text-base-content">{t.copyright}</p>
-            <p className="mt-2 max-w-5xl leading-6 text-base-content/55">
-              {t.disclaimer}
-            </p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter locale={locale} />
     </main>
+  )
+}
+
+export function SiteFooter({ locale }: { locale: Locale }) {
+  const t = getI18n(locale).layout
+
+  return (
+    <footer className="border-t border-base-300 bg-base-100">
+      <div className="mx-auto max-w-7xl px-4 py-8 text-sm text-base-content/70 sm:px-6 lg:px-8">
+        <div className="grid gap-8 md:grid-cols-[1.5fr_1fr_1fr] md:items-start">
+          <section className="max-w-md">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-lg text-primary-content">
+                <i className="ri-gamepad-line" />
+              </span>
+              <div>
+                <p className="text-base font-semibold text-base-content">
+                  {siteConfig.SITE_NAME}
+                </p>
+              </div>
+            </div>
+            <p className="mt-4 leading-6">{t.footer}</p>
+            <a
+              className="mt-4 badge badge-outline badge-primary h-auto gap-2 px-3 py-2"
+              href="https://ggemu.com"
+              target="_blank"
+            >
+              <i className="ri-flashlight-line" />
+              Built with GGEMU
+            </a>
+          </section>
+
+          <nav>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-base-content/45">
+              Explore
+            </p>
+            <div className="flex flex-col items-start gap-2">
+              <Link className="link-hover link" params={{ locale }} to="/$locale">
+                <i className="ri-home-5-line mr-1" />
+                {t.games}
+              </Link>
+              <Link
+                className="link-hover link"
+                params={{ locale }}
+                to="/$locale/about"
+              >
+                <i className="ri-information-line mr-1" />
+                {t.about}
+              </Link>
+            </div>
+          </nav>
+        </div>
+
+        <div className="mt-8 border-t border-base-300 pt-5">
+          <p className="font-medium text-base-content">{t.copyright}</p>
+          <p className="mt-2 max-w-5xl leading-6 text-base-content/55">
+            {t.disclaimer}
+          </p>
+        </div>
+      </div>
+    </footer>
   )
 }

@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 
 const API_BASE_URL = 'https://ggemu.com'
 const PAGE_SIZE = 20
+const MAX_PAGE_SIZE = 100
 
 export type Locale = 'zh-CN' | 'en' | 'ja'
 export type GameSearchSort = 'newest' | 'popular' | 'oldest' | 'name_asc'
@@ -46,6 +47,7 @@ type GameSearchPayload = {
   query?: string
   locale?: Locale
   page?: number
+  limit?: number
   platform?: string
   category?: string
   sort?: GameSearchSort
@@ -69,6 +71,16 @@ type GameDetailResponse = {
 function normalizePage(page: unknown) {
   const parsed = Number(page)
   return Number.isInteger(parsed) && parsed > 0 ? parsed : 1
+}
+
+function normalizeLimit(limit: unknown) {
+  const parsed = Number(limit)
+
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return PAGE_SIZE
+  }
+
+  return Math.min(parsed, MAX_PAGE_SIZE)
 }
 
 function normalizeLocale(locale: unknown): Locale {
@@ -114,6 +126,7 @@ export const searchGames = createServerFn({ method: 'GET' })
     query: payload.query ?? '',
     locale: normalizeLocale(payload.locale),
     page: normalizePage(payload.page),
+    limit: normalizeLimit(payload.limit),
     platform: payload.platform ?? '',
     category: payload.category ?? '',
     sort: normalizeSort(payload.sort),
@@ -121,7 +134,7 @@ export const searchGames = createServerFn({ method: 'GET' })
   .handler(async ({ data }) => {
     const params = new URLSearchParams({
       page: String(data.page),
-      limit: String(PAGE_SIZE),
+      limit: String(data.limit),
       play_online: '1',
     })
 

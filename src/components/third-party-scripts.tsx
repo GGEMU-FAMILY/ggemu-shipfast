@@ -10,7 +10,7 @@ export function ThirdPartyScripts() {
 }
 
 function GoogleAnalytics() {
-  const analyticsId = siteConfig.googleAnalyticsId
+  const analyticsId = siteConfig.GOOGLE_ANALYTICS_ID.trim()
 
   if (!analyticsId) {
     return null
@@ -37,7 +37,7 @@ function GoogleAnalytics() {
 }
 
 function GoogleAdsense() {
-  const client = siteConfig.googleAdsenseClient
+  const client = siteConfig.GOOGLE_ADSENSE_CLIENT.trim()
 
   if (!client) {
     return null

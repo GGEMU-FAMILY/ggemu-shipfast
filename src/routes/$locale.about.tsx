@@ -11,7 +11,7 @@ export const Route = createFileRoute('/$locale/about')({
 
     return {
       meta: [
-        { title: `${t.title} | ${siteConfig.name}` },
+        { title: `${t.title} | ${siteConfig.SITE_NAME}` },
         { name: 'description', content: t.description },
       ],
     }

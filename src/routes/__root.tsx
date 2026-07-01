@@ -21,7 +21,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: `${siteConfig.slogan} | No Downloads Required`,
+        title: `${siteConfig.SITE_SLOGAN} | No Downloads Required`,
       },
       {
         name: 'description',
@@ -35,7 +35,7 @@ export const Route = createRootRoute({
       },
       {
         property: 'og:title',
-        content: siteConfig.slogan,
+        content: siteConfig.SITE_SLOGAN,
       },
       {
         property: 'og:description',
@@ -52,7 +52,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'twitter:title',
-        content: siteConfig.slogan,
+        content: siteConfig.SITE_SLOGAN,
       },
       {
         name: 'twitter:description',

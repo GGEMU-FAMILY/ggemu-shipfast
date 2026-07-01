@@ -1,4 +1,4 @@
-declare const __SITE_THEMES__: string
+import rawSiteConfig from '../../siteconfig.js'
 
 const defaultThemes = ['light', 'dark']
 
@@ -48,7 +48,7 @@ function parseSiteThemes(value: string) {
 }
 
 export const siteThemes = Array.from(
-  new Set([...defaultThemes, ...parseSiteThemes(__SITE_THEMES__)]),
+  new Set([...defaultThemes, ...parseSiteThemes(rawSiteConfig.SITE_THEMES)]),
 )
 
 export function normalizeSiteTheme(value: string | null) {

@@ -25,7 +25,7 @@ function LocalizedPlayGamePage() {
   const { gameId, locale } = Route.useParams()
   const lang = normalizeLocale(locale)
   const embedId = encodeURIComponent(game._id || game.url_slug || gameId)
-  const refcode = encodeURIComponent(siteConfig.ggEmuRefcode)
+  const refcode = encodeURIComponent(siteConfig.GGEMU_REFCODE)
   const embedSrc = `https://ggemu.com/${lang}/game/${embedId}?r=${refcode}&embed=1`
 
   return (

@@ -1,8 +1,8 @@
 import type { Locale, PublicGame } from '#/lib/ggemu'
 import { siteConfig } from '#/lib/site-config'
 
-const copyrightText = `Copyright © 2025 ${siteConfig.name}`
-const copyrightDisclaimer = `All the games ROM / programs are submitted by users or collected from the internet, and the copyrights belong to their respective owners. If you have any issues, please email ${siteConfig.email}, and we will remove the corresponding content.`
+const copyrightText = `Copyright © 2025 ${siteConfig.SITE_NAME}`
+const copyrightDisclaimer = `All the games ROM / programs are submitted by users or collected from the internet, and the copyrights belong to their respective owners. If you have any issues, please email ${siteConfig.SITE_EMAIL}, and we will remove the corresponding content.`
 
 export function normalizeLocale(value: unknown): Locale {
   return value === 'en' || value === 'ja' ? value : 'zh-CN'
@@ -78,7 +78,7 @@ export const i18n = {
     },
     about: {
       title: '关于',
-      description: `关于 ${siteConfig.name} 在线复古游戏网站。`,
+      description: `关于 ${siteConfig.SITE_NAME} 在线复古游戏网站。`,
     },
   },
   en: {
@@ -93,7 +93,7 @@ export const i18n = {
         'Play classic retro games directly in your browser. No downloads required.',
     },
     home: {
-      title: siteConfig.slogan,
+      title: siteConfig.SITE_SLOGAN,
       subtitle:
         'Play classic retro games from GBA, NES, SNES, PS1, N64, Sega Genesis, Arcade and more directly in your browser. No downloads required.',
       searchPlaceholder: 'Search by game title, platform, or series...',
@@ -115,7 +115,7 @@ export const i18n = {
       featured: 'Playable retro games',
     },
     homeSeo: {
-      title: `${siteConfig.slogan} | No Downloads Required`,
+      title: `${siteConfig.SITE_SLOGAN} | No Downloads Required`,
       description:
         'Play classic retro games from GBA, NES, SNES, PS1, N64, Sega Genesis, Arcade and more directly in your browser. No downloads required.',
       keywords:
@@ -141,7 +141,7 @@ export const i18n = {
     },
     about: {
       title: 'About',
-      description: `About ${siteConfig.name}, a browser-based classic retro games website.`,
+      description: `About ${siteConfig.SITE_NAME}, a browser-based classic retro games website.`,
     },
   },
   ja: {
@@ -204,7 +204,7 @@ export const i18n = {
     },
     about: {
       title: '概要',
-      description: `ブラウザーで遊べるレトロゲームサイト ${siteConfig.name} について。`,
+      description: `ブラウザーで遊べるレトロゲームサイト ${siteConfig.SITE_NAME} について。`,
     },
   },
 } satisfies Record<Locale, Record<string, Record<string, string>>>
