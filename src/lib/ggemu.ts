@@ -1,4 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
+import { getRequestUrl } from '@tanstack/react-start/server'
 
 const API_BASE_URL = 'https://ggemu.com'
 const PAGE_SIZE = 20
@@ -25,6 +26,7 @@ export type PublicGame = {
   play_online?: number
   downloadable?: number
   game_cover?: string
+  game_video?: string
   likes_count?: number
   comments_count?: number
   views_count?: number
@@ -43,6 +45,13 @@ export type GameSearchResult = {
   pagination: Pagination
 }
 
+export type GameDetailPageData = {
+  canonicalUrl: string
+  game: PublicGame
+  relatedByCategory: Array<PublicGame>
+  relatedByDeveloper: Array<PublicGame>
+}
+
 type GameSearchPayload = {
   query?: string
   locale?: Locale
@@ -55,6 +64,7 @@ type GameSearchPayload = {
 
 type GameDetailPayload = {
   id: string
+  locale?: Locale
 }
 
 type GameSearchResponse = {
@@ -121,6 +131,85 @@ async function fetchJson<T>(path: string, params: URLSearchParams) {
   return response.json() as Promise<T>
 }
 
+async function fetchGames(params: URLSearchParams) {
+  const result = await fetchJson<GameSearchResponse>('/api/games/search', params)
+
+  return {
+    games: result.data,
+    pagination: result.pagination,
+  } satisfies GameSearchResult
+}
+
+function getGameId(game: PublicGame) {
+  return game.url_slug?.trim() || game._id?.trim() || ''
+}
+
+function getAbsoluteGameUrl(origin: string, locale: Locale, game: PublicGame, fallbackId: string) {
+  const id = encodeURIComponent(getGameId(game) || fallbackId)
+
+  return `${origin}/${locale}/games/${id}`
+}
+
+function isSameGame(game: PublicGame, id: string) {
+  return getGameId(game) === id
+}
+
+function dedupeGames(games: Array<PublicGame>) {
+  const seen = new Set<string>()
+
+  return games.filter((game) => {
+    const id = getGameId(game)
+
+    if (!id || seen.has(id)) {
+      return false
+    }
+
+    seen.add(id)
+    return true
+  })
+}
+
+async function fetchRelatedGames({
+  category,
+  currentId,
+  developer,
+}: {
+  category?: string
+  currentId: string
+  developer?: string
+}) {
+  const categoryParams = new URLSearchParams({
+    limit: '8',
+    page: '1',
+    play_online: '1',
+    sort: 'popular',
+  })
+  const developerParams = new URLSearchParams({
+    limit: '8',
+    page: '1',
+    play_online: '1',
+    sort: 'popular',
+  })
+
+  addOptionalParam(categoryParams, 'category', category)
+  addOptionalParam(developerParams, 'query', developer)
+
+  const [categoryResult, developerResult] = await Promise.all([
+    category ? fetchGames(categoryParams).catch(() => null) : null,
+    developer ? fetchGames(developerParams).catch(() => null) : null,
+  ])
+
+  const relatedByCategory = dedupeGames(categoryResult?.games ?? [])
+    .filter((game) => !isSameGame(game, currentId))
+    .slice(0, 6)
+  const relatedByDeveloper = dedupeGames(developerResult?.games ?? [])
+    .filter((game) => !isSameGame(game, currentId))
+    .filter((game) => game.developer?.trim() === developer?.trim())
+    .slice(0, 6)
+
+  return { relatedByCategory, relatedByDeveloper }
+}
+
 export const searchGames = createServerFn({ method: 'GET' })
   .validator((payload: GameSearchPayload) => ({
     query: payload.query ?? '',
@@ -143,15 +232,7 @@ export const searchGames = createServerFn({ method: 'GET' })
     addOptionalParam(params, 'category', data.category)
     addOptionalParam(params, 'sort', data.sort)
 
-    const result = await fetchJson<GameSearchResponse>(
-      '/api/games/search',
-      params,
-    )
-
-    return {
-      games: result.data,
-      pagination: result.pagination,
-    } satisfies GameSearchResult
+    return fetchGames(params)
   })
 
 export const getGameDetail = createServerFn({ method: 'GET' })
@@ -163,4 +244,28 @@ export const getGameDetail = createServerFn({ method: 'GET' })
     const result = await fetchJson<GameDetailResponse>('/api/game/detail', params)
 
     return result.data
+  })
+
+export const getGameDetailPageData = createServerFn({ method: 'GET' })
+  .validator((payload: GameDetailPayload) => ({
+    id: payload.id,
+    locale: normalizeLocale(payload.locale),
+  }))
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams({ id: data.id })
+    const result = await fetchJson<GameDetailResponse>('/api/game/detail', params)
+    const game = result.data
+    const currentId = getGameId(game) || data.id
+    const origin = getRequestUrl({ xForwardedHost: true }).origin
+    const related = await fetchRelatedGames({
+      category: game.categories?.[0],
+      currentId,
+      developer: game.developer,
+    })
+
+    return {
+      canonicalUrl: getAbsoluteGameUrl(origin, data.locale, game, data.id),
+      game,
+      ...related,
+    } satisfies GameDetailPageData
   })

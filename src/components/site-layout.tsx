@@ -79,8 +79,12 @@ export function SiteLayout({
         <div className="navbar mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="navbar-start">
             <Link className="flex items-center gap-3" params={{ locale }} to="/$locale">
-              <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-lg font-bold text-primary-content">
-                <i className="ri-gamepad-line" />
+              <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-lg bg-base-100">
+                <img
+                  alt={siteConfig.SITE_NAME}
+                  className="h-full w-full object-contain"
+                  src="/logo.png"
+                />
               </span>
               <span className="leading-tight">
                 <span className="block text-lg font-semibold tracking-wide">
@@ -201,11 +205,15 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="border-t border-base-300 bg-base-100">
       <div className="mx-auto max-w-7xl px-4 py-8 text-sm text-base-content/70 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-[1.5fr_1fr_1fr] md:items-start">
+        <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-start">
           <section className="max-w-md">
             <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-lg text-primary-content">
-                <i className="ri-gamepad-line" />
+              <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-lg bg-base-100">
+                <img
+                  alt={siteConfig.SITE_NAME}
+                  className="h-full w-full object-contain"
+                  src="/logo.png"
+                />
               </span>
               <div>
                 <p className="text-base font-semibold text-base-content">
@@ -224,7 +232,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             </a>
           </section>
 
-          <nav>
+          <nav className="md:min-w-32">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-base-content/45">
               Explore
             </p>
@@ -240,6 +248,28 @@ export function SiteFooter({ locale }: { locale: Locale }) {
               >
                 <i className="ri-information-line mr-1" />
                 {t.about}
+              </Link>
+            </div>
+          </nav>
+
+          <nav className="md:min-w-40">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-base-content/45">
+              {t.legal}
+            </p>
+            <div className="flex flex-col items-start gap-2">
+              <Link
+                className="link-hover link"
+                params={{ locale }}
+                to="/$locale/privacy-policy"
+              >
+                {t.privacyPolicy}
+              </Link>
+              <Link
+                className="link-hover link"
+                params={{ locale }}
+                to="/$locale/terms-of-service"
+              >
+                {t.termsOfService}
               </Link>
             </div>
           </nav>

@@ -17,7 +17,7 @@ import {
   type PublicGame,
   searchGames,
 } from '#/lib/ggemu'
-import { formatCopy, getI18n, normalizeLocale } from '#/lib/i18n'
+import { formatCopy, getHomeFaqs, getI18n, normalizeLocale } from '#/lib/i18n'
 import { siteConfig } from '#/lib/site-config'
 import { normalizeSiteTheme, siteThemes } from '#/lib/site-themes'
 
@@ -329,12 +329,9 @@ function LocalizedHomePage() {
 
 function PokiLikeHomeTemplate(props: HomeTemplateProps) {
   const {
-    filters,
     games,
     isLoading,
     lang,
-    onQueryChange,
-    onSearch,
     t,
   } = props
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -388,12 +385,8 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
           ref={gridRef}
         >
           <PokiControlTiles
-            filters={filters}
-            isLoading={isLoading}
             isSearchOpen={isSearchOpen}
             lang={lang}
-            onQueryChange={onQueryChange}
-            onSearch={onSearch}
             onToggleSearch={() => setIsSearchOpen((isOpen) => !isOpen)}
             t={t}
           />
@@ -423,28 +416,27 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
           ))}
 
         </div>
+        <PokiSearchOverlay
+          isOpen={isSearchOpen}
+          lang={lang}
+          onClose={() => setIsSearchOpen(false)}
+          t={t}
+        />
       </section>
+      <HomeFaqSection lang={lang} />
       <SiteFooter locale={lang} />
     </main>
   )
 }
 
 function PokiControlTiles({
-  filters,
-  isLoading,
   isSearchOpen,
   lang,
-  onQueryChange,
-  onSearch,
   onToggleSearch,
   t,
 }: {
-  filters: Filters
-  isLoading: boolean
   isSearchOpen: boolean
   lang: Locale
-  onQueryChange: (query: string) => void
-  onSearch: (event: FormEvent<HTMLFormElement>) => void
   onToggleSearch: () => void
   t: HomeCopy
 }) {
@@ -477,11 +469,6 @@ function PokiControlTiles({
     themeMenuRef.current?.removeAttribute('open')
   }
 
-  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
-    onSearch(event)
-    onToggleSearch()
-  }
-
   return (
     <div className="relative h-[100px] w-[100px] overflow-visible rounded-2xl bg-white shadow-lg">
       <Link
@@ -494,7 +481,7 @@ function PokiControlTiles({
         <img
           alt={siteConfig.SITE_NAME}
           className="h-full max-h-[52px] w-full object-contain px-3 py-2"
-          src="/logo192.png"
+          src="/logo.png"
         />
       </Link>
 
@@ -551,30 +538,183 @@ function PokiControlTiles({
         </button>
       </div>
 
-      {isSearchOpen ? (
-        <form
-          className="absolute left-0 top-[calc(100%+0.75rem)] z-50 flex w-[min(20rem,calc(100vw-1.5rem))] gap-2 rounded-2xl bg-white p-3 shadow-2xl"
-          onSubmit={handleSearchSubmit}
-        >
-          <input
-            autoFocus
-            className="input input-bordered min-w-0 flex-1"
-            onChange={(event) => onQueryChange(event.currentTarget.value)}
-            placeholder={t.searchPlaceholder}
-            type="search"
-            value={filters.query}
-          />
-          <button className="btn btn-primary" disabled={isLoading} type="submit">
-            <i className="ri-search-line" />
-          </button>
-        </form>
-      ) : null}
     </div>
   )
 }
 
+function PokiSearchOverlay({
+  isOpen,
+  lang,
+  onClose,
+  t,
+}: {
+  isOpen: boolean
+  lang: Locale
+  onClose: () => void
+  t: HomeCopy
+}) {
+  const runSearch = useServerFn(searchGames)
+  const [filters, setFilters] = useState<Filters>({
+    query: '',
+    platform: '',
+    category: '',
+    sort: 'newest',
+  })
+  const [result, setResult] = useState<GameSearchResult | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+  const searchGamesList = result?.games ?? []
+
+  async function searchOverlayGames(nextFilters: Filters) {
+    setIsSearching(true)
+
+    try {
+      const nextResult = await runSearch({
+        data: {
+          query: nextFilters.query,
+          limit: 24,
+          locale: lang,
+          page: 1,
+          platform: nextFilters.platform,
+          category: nextFilters.category,
+          sort: nextFilters.sort,
+        },
+      })
+
+      setResult(nextResult)
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    searchOverlayGames(filters)
+  }
+
+  function updateFilter<Key extends keyof Filters>(key: Key, value: Filters[Key]) {
+    setFilters((current) => ({
+      ...current,
+      [key]: value,
+    }))
+  }
+
+  function resetSearch() {
+    setFilters({
+      query: '',
+      platform: '',
+      category: '',
+      sort: 'newest',
+    })
+    setResult(null)
+  }
+
+  return (
+    <>
+      <div
+        className={`fixed inset-0 z-40 bg-black/20 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        onClick={onClose}
+      />
+      <aside
+        className={`fixed bottom-0 left-0 top-0 z-50 flex w-[min(28rem,calc(100vw-1.5rem))] flex-col bg-base-100 shadow-2xl transition-transform duration-200 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <header className="flex items-center justify-between border-b border-base-300 px-4 py-3">
+          <h2 className="text-base font-semibold">{t.search}</h2>
+          <button className="btn btn-ghost btn-sm btn-square" onClick={onClose} type="button">
+            <i className="ri-close-line text-xl" />
+          </button>
+        </header>
+
+        <form className="grid gap-3 border-b border-base-300 p-4" onSubmit={handleSearch}>
+          <input
+            autoFocus={isOpen}
+            className="input input-bordered w-full"
+            onChange={(event) => updateFilter('query', event.currentTarget.value)}
+            placeholder={t.searchPlaceholder}
+            type="search"
+            value={filters.query}
+          />
+
+          <FilterSelects
+            filters={filters}
+            isLoading={isSearching}
+            onFilterChange={updateFilter}
+            onReset={resetSearch}
+            t={t}
+          />
+
+          <button className="btn btn-primary w-full" disabled={isSearching} type="submit">
+            <i className="ri-search-line" />
+            {t.search}
+          </button>
+        </form>
+
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          {result ? (
+            searchGamesList.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {searchGamesList.map((game) => (
+                  <PokiSearchResultCard
+                    game={game}
+                    key={game._id ?? game.url_slug ?? game.name}
+                    lang={lang}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-box border border-base-300 p-8 text-center text-sm text-base-content/60">
+                {t.empty}
+              </div>
+            )
+          ) : (
+            <div className="rounded-box border border-dashed border-base-300 p-8 text-center text-sm text-base-content/60">
+              {t.search}
+            </div>
+          )}
+        </div>
+      </aside>
+    </>
+  )
+}
+
+function PokiSearchResultCard({
+  game,
+  lang,
+}: {
+  game: PublicGame
+  lang: Locale
+}) {
+  const gameId = game.url_slug || game._id || ''
+
+  return (
+    <Link
+      className="group overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+      params={{ gameId, locale: lang }}
+      search={{}}
+      to="/$locale/games/$gameId"
+    >
+      <div className="aspect-square bg-base-200">
+        {game.game_cover ? (
+          <img
+            alt={game.name ?? 'Game cover'}
+            className="h-full w-full object-cover"
+            loading="lazy"
+            src={game.game_cover}
+          />
+        ) : (
+          <div className="grid h-full w-full place-items-center text-xs text-base-content/50">
+            Retro
+          </div>
+        )}
+      </div>
+      <div className="p-2 text-[12px] font-medium leading-tight">
+        <span className="line-clamp-2">{game.name}</span>
+      </div>
+    </Link>
+  )
+}
+
 function DefaultHomeTemplate(props: HomeTemplateProps) {
-  const { t } = props
+  const { lang, t } = props
 
   return (
     <>
@@ -598,35 +738,74 @@ function DefaultHomeTemplate(props: HomeTemplateProps) {
         gridClassName="grid gap-4 sm:grid-cols-3 lg:grid-cols-5"
         sectionClassName="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 lg:px-8"
       />
+
+      <HomeFaqSection lang={lang} />
     </>
   )
 }
 
 function TwoColumnHomeTemplate(props: HomeTemplateProps) {
-  const { t } = props
+  const { lang, t } = props
 
   return (
-    <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[20rem_minmax(0,1fr)] lg:px-8">
-      <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
-        <section className="rounded-box border border-base-300 bg-base-100 p-4">
-          <h1 className="text-2xl font-semibold leading-tight text-base-content">
-            {t.title}
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-base-content/70">
-            {t.subtitle}
+    <>
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[20rem_minmax(0,1fr)] lg:px-8">
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+          <section className="rounded-box border border-base-300 bg-base-100 p-4">
+            <h1 className="text-2xl font-semibold leading-tight text-base-content">
+              {t.title}
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-base-content/70">
+              {t.subtitle}
+            </p>
+          </section>
+
+          <section className="rounded-box border border-base-300 bg-base-100 p-4">
+            <SearchForm {...props} mode="sidebar" />
+          </section>
+        </aside>
+
+        <GamesSection
+          {...props}
+          gridClassName="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+          sectionClassName="flex min-w-0 flex-col gap-5"
+        />
+      </section>
+
+      <HomeFaqSection lang={lang} />
+    </>
+  )
+}
+
+function HomeFaqSection({ lang }: { lang: Locale }) {
+  const faq = getHomeFaqs(lang)
+
+  return (
+    <section className="border-t border-base-300 bg-base-100/80">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="max-w-3xl">
+          <h2 className="text-2xl font-semibold text-base-content">{faq.title}</h2>
+          <p className="mt-2 text-sm leading-6 text-base-content/65">
+            {faq.subtitle}
           </p>
-        </section>
+        </div>
 
-        <section className="rounded-box border border-base-300 bg-base-100 p-4">
-          <SearchForm {...props} mode="sidebar" />
-        </section>
-      </aside>
-
-      <GamesSection
-        {...props}
-        gridClassName="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-        sectionClassName="flex min-w-0 flex-col gap-5"
-      />
+        <div className="mt-6 grid gap-3">
+          {faq.items.map((item) => (
+            <article
+              className="rounded-lg border border-base-300 bg-base-100 p-4"
+              key={item.question}
+            >
+              <h3 className="text-sm font-semibold text-base-content">
+                {item.question}
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-base-content/65">
+                {item.answer}
+              </p>
+            </article>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }
@@ -1037,10 +1216,31 @@ function PokiGameCard({
   size: PokiTileSize
 }) {
   const gameId = game.url_slug || game._id || ''
+  const gameName = game.name?.trim() || 'Game'
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  function playPreviewVideo() {
+    videoRef.current?.play().catch(() => {})
+  }
+
+  function stopPreviewVideo() {
+    const video = videoRef.current
+
+    if (!video) {
+      return
+    }
+
+    video.pause()
+    video.currentTime = 0
+  }
 
   return (
     <Link
       className={`group relative overflow-hidden rounded-2xl bg-white shadow-lg transition duration-200 hover:scale-[1.03] hover:shadow-2xl ${pokiTileSizeClasses[size]}`}
+      onBlur={stopPreviewVideo}
+      onFocus={playPreviewVideo}
+      onMouseEnter={playPreviewVideo}
+      onMouseLeave={stopPreviewVideo}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
@@ -1057,10 +1257,19 @@ function PokiGameCard({
           Retro
         </div>
       )}
-      <span className="absolute inset-0 grid place-items-center bg-black/35 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-white text-2xl text-blue-600 shadow-lg">
-          <i className="ri-play-fill" />
-        </span>
+      {game.game_video ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          loop
+          muted
+          playsInline
+          preload="none"
+          ref={videoRef}
+          src={game.game_video}
+        />
+      ) : null}
+      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/45 to-transparent px-2 pb-2 pt-8 text-[12px] font-semibold leading-tight text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        <span className="line-clamp-2">{gameName}</span>
       </span>
     </Link>
   )

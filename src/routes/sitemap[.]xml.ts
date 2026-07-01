@@ -6,7 +6,7 @@ const GGEMU_API_BASE_URL = 'https://ggemu.com'
 const SITEMAP_PAGE_SIZE = 100
 const SITEMAP_MAX_PAGES = 50
 const SITEMAP_CACHE_TTL_MS = 1000 * 60 * 60 * 24
-const locales = ['en'] as const satisfies ReadonlyArray<Locale>
+const locales = ['zh-CN', 'en', 'ja'] as const satisfies ReadonlyArray<Locale>
 
 let sitemapCache: {
   expiresAt: number
@@ -124,6 +124,16 @@ function buildSitemapEntries(origin: string, games: Array<PublicGame>) {
       loc: toAbsoluteUrl(origin, `/${locale}/about`),
       changefreq: 'weekly',
       priority: 0.4,
+    })
+    entries.push({
+      loc: toAbsoluteUrl(origin, `/${locale}/privacy-policy`),
+      changefreq: 'weekly',
+      priority: 0.3,
+    })
+    entries.push({
+      loc: toAbsoluteUrl(origin, `/${locale}/terms-of-service`),
+      changefreq: 'weekly',
+      priority: 0.3,
     })
 
     for (const game of games) {

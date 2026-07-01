@@ -14,6 +14,8 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as LocaleRouteImport } from './routes/$locale'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesGameIdRouteImport } from './routes/games/$gameId'
+import { Route as LocaleTermsOfServiceRouteImport } from './routes/$locale.terms-of-service'
+import { Route as LocalePrivacyPolicyRouteImport } from './routes/$locale.privacy-policy'
 import { Route as LocaleAboutRouteImport } from './routes/$locale.about'
 import { Route as GamesGameIdPlayRouteImport } from './routes/games/$gameId/play'
 import { Route as UsernameStatusStatusidRouteImport } from './routes/$username/status/$statusid'
@@ -45,6 +47,16 @@ const GamesGameIdRoute = GamesGameIdRouteImport.update({
   id: '/games/$gameId',
   path: '/games/$gameId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleTermsOfServiceRoute = LocaleTermsOfServiceRouteImport.update({
+  id: '/terms-of-service',
+  path: '/terms-of-service',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocalePrivacyPolicyRoute = LocalePrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => LocaleRoute,
 } as any)
 const LocaleAboutRoute = LocaleAboutRouteImport.update({
   id: '/about',
@@ -83,6 +95,8 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
+  '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
@@ -96,6 +110,8 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
+  '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
@@ -110,6 +126,8 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
+  '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
@@ -125,6 +143,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/privacy-policy'
+    | '/$locale/terms-of-service'
     | '/games/$gameId'
     | '/$locale/games/$gameId'
     | '/$username/article/$statusid'
@@ -138,6 +158,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/privacy-policy'
+    | '/$locale/terms-of-service'
     | '/games/$gameId'
     | '/$locale/games/$gameId'
     | '/$username/article/$statusid'
@@ -151,6 +173,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/privacy-policy'
+    | '/$locale/terms-of-service'
     | '/games/$gameId'
     | '/$locale/games/$gameId'
     | '/$username/article/$statusid'
@@ -205,6 +229,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/games/$gameId'
       preLoaderRoute: typeof GamesGameIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$locale/terms-of-service': {
+      id: '/$locale/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/$locale/terms-of-service'
+      preLoaderRoute: typeof LocaleTermsOfServiceRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/privacy-policy': {
+      id: '/$locale/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/$locale/privacy-policy'
+      preLoaderRoute: typeof LocalePrivacyPolicyRouteImport
+      parentRoute: typeof LocaleRoute
     }
     '/$locale/about': {
       id: '/$locale/about'
@@ -264,11 +302,15 @@ const LocaleGamesGameIdRouteWithChildren =
 
 interface LocaleRouteChildren {
   LocaleAboutRoute: typeof LocaleAboutRoute
+  LocalePrivacyPolicyRoute: typeof LocalePrivacyPolicyRoute
+  LocaleTermsOfServiceRoute: typeof LocaleTermsOfServiceRoute
   LocaleGamesGameIdRoute: typeof LocaleGamesGameIdRouteWithChildren
 }
 
 const LocaleRouteChildren: LocaleRouteChildren = {
   LocaleAboutRoute: LocaleAboutRoute,
+  LocalePrivacyPolicyRoute: LocalePrivacyPolicyRoute,
+  LocaleTermsOfServiceRoute: LocaleTermsOfServiceRoute,
   LocaleGamesGameIdRoute: LocaleGamesGameIdRouteWithChildren,
 }
 
