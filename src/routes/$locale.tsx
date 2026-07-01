@@ -18,7 +18,12 @@ import {
   searchGames,
 } from '#/lib/ggemu'
 import { formatCopy, getHomeFaqs, getI18n, normalizeLocale } from '#/lib/i18n'
-import { siteConfig } from '#/lib/site-config'
+import {
+  type SiteTemplate,
+  getSiteTemplate,
+  normalizeSiteTemplate,
+  siteConfig,
+} from '#/lib/site-config'
 import { getSiteThemes, normalizeSiteTheme } from '#/lib/site-themes'
 
 const DEFAULT_HOME_REQUEST_SIZE = 20
@@ -111,7 +116,16 @@ type Filters = {
   sort: GameSearchSort
 }
 
+type HomeSearch = {
+  template?: SiteTemplate
+}
+
 type HomeCopy = ReturnType<typeof getI18n>['home']
+
+type HomeLoaderData = GameSearchResult & {
+  featureSections?: Array<FeatureSection>
+  layoutSeed: number
+}
 
 type SearchFormProps = {
   filters: Filters
@@ -190,10 +204,42 @@ function getPlatformBadge(game: PublicGame) {
     .toUpperCase()
 }
 
+function validateHomeSearch(search: Record<string, unknown>): HomeSearch {
+  return {
+    template: normalizeSiteTemplate(search.template),
+  }
+}
+
+function getSearchTemplate(search: unknown) {
+  if (!search || typeof search !== 'object') {
+    return undefined
+  }
+
+  return normalizeSiteTemplate((search as Record<string, unknown>).template)
+}
+
+function parseHomeSearchStr(searchStr: string) {
+  const searchParams = new URLSearchParams(searchStr)
+  const template = normalizeSiteTemplate(searchParams.get('template'))
+
+  return {
+    hasTemplateOnly: Boolean(template) && Array.from(searchParams.keys()).length === 1,
+    template,
+  }
+}
+
 export const Route = createFileRoute('/$locale')({
-  head: ({ params }) => {
+  validateSearch: validateHomeSearch,
+  headers: ({ match }) =>
+    getSearchTemplate(match.search)
+      ? {
+          'X-Robots-Tag': 'noindex, nofollow',
+        }
+      : undefined,
+  head: ({ params, match }) => {
     const locale = normalizeLocale(params.locale)
     const meta = getI18n(locale).homeSeo
+    const isTemplatePreview = Boolean(getSearchTemplate(match.search))
 
     return {
       meta: [
@@ -206,23 +252,38 @@ export const Route = createFileRoute('/$locale')({
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: meta.title },
         { name: 'twitter:description', content: meta.description },
+        ...(isTemplatePreview
+          ? [{ name: 'robots', content: 'noindex,nofollow' }]
+          : []),
       ],
     }
   },
-  validateSearch: () => ({}),
   beforeLoad: ({ location, params }) => {
-    if (location.pathname === `/${params.locale}` && location.searchStr) {
+    if (!location.searchStr || location.pathname !== `/${params.locale}`) {
+      return undefined as never
+    }
+
+    const { hasTemplateOnly, template } = parseHomeSearchStr(location.searchStr)
+
+    if (!hasTemplateOnly) {
       throw redirect({
         params: { locale: params.locale },
         replace: true,
+        search: template ? { template } : {},
         to: '/$locale',
       })
     }
-  },
-  loader: async ({ params }) => {
-    const locale = normalizeLocale(params.locale)
 
-    if (siteConfig.SITE_TEMPLATE === 'features') {
+    return undefined as never
+  },
+  loaderDeps: ({ search }): HomeSearch => ({
+    template: getSearchTemplate(search),
+  }),
+  loader: async ({ deps, params }): Promise<HomeLoaderData> => {
+    const locale = normalizeLocale(params.locale)
+    const template = getSiteTemplate(getSearchTemplate(deps))
+
+    if (template === 'features') {
       const [newArrival, topPlays, topLikes, topViews] = await Promise.all([
         loadFeatureGames(locale, 'newest', FEATURE_NEW_ARRIVAL_LIMIT),
         loadFeatureGames(locale, 'popular'),
@@ -262,10 +323,12 @@ export const Route = createFileRoute('/$locale')({
 
 function LocalizedHomePage() {
   const { locale } = Route.useParams()
-  const initialResult = Route.useLoaderData()
+  const template = getSearchTemplate(Route.useSearch())
+  const initialResult = Route.useLoaderData() as HomeLoaderData
   const runSearch = useServerFn(searchGames)
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const lang = normalizeLocale(locale)
+  const currentTemplate = getSiteTemplate(template)
   const t = getI18n(lang).home
   const [result, setResult] = useState<GameSearchResult>(initialResult)
   const [filters, setFilters] = useState<Filters>({
@@ -275,11 +338,16 @@ function LocalizedHomePage() {
     sort: 'newest',
   })
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    setResult(initialResult)
+  }, [initialResult])
+
   const { games, pagination } = result
   const page = pagination.page
   const pages = Math.max(pagination.pages, 1)
-  const isPokiLike = siteConfig.SITE_TEMPLATE === 'poki-like'
-  const isFeatures = siteConfig.SITE_TEMPLATE === 'features'
+  const isPokiLike = currentTemplate === 'poki-like'
+  const isFeatures = currentTemplate === 'features'
   const templateProps = {
     filters,
     featureSections: initialResult.featureSections,
@@ -341,7 +409,7 @@ function LocalizedHomePage() {
   }
 
   function resetFilters() {
-    const nextFilters = {
+    const nextFilters: Filters = {
       query: '',
       platform: '',
       category: '',
@@ -360,7 +428,7 @@ function LocalizedHomePage() {
     return <FeaturesHomeTemplate {...templateProps} />
   }
 
-  if (siteConfig.SITE_TEMPLATE === 'two-column') {
+  if (currentTemplate === 'two-column') {
     return (
       <SiteLayout locale={lang}>
         <TwoColumnHomeTemplate {...templateProps} />
@@ -433,7 +501,6 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
           ref={gridRef}
         >
           <PokiControlTiles
-            isSearchOpen={isSearchOpen}
             lang={lang}
             onToggleSearch={() => setIsSearchOpen((isOpen) => !isOpen)}
             t={t}
@@ -478,12 +545,10 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
 }
 
 function PokiControlTiles({
-  isSearchOpen,
   lang,
   onToggleSearch,
   t,
 }: {
-  isSearchOpen: boolean
   lang: Locale
   onToggleSearch: () => void
   t: HomeCopy

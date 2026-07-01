@@ -17,12 +17,14 @@ const siteConfigKeys = [
   'GOOGLE_ANALYTICS_ID',
 ] as const satisfies readonly SiteConfigKey[]
 
-const siteTemplates = new Set<SiteTemplate>([
+export const siteTemplates = [
   'default',
   'two-column',
   'poki-like',
   'features',
-])
+] as const satisfies ReadonlyArray<SiteTemplate>
+
+const siteTemplateSet = new Set<SiteTemplate>(siteTemplates)
 
 declare global {
   interface Window {
@@ -51,7 +53,7 @@ function normalizeConfigValue(key: SiteConfigKey, value: string | undefined) {
     return undefined
   }
 
-  if (key === 'SITE_TEMPLATE' && !siteTemplates.has(value as SiteTemplate)) {
+  if (key === 'SITE_TEMPLATE' && !normalizeSiteTemplate(value)) {
     return undefined
   }
 
@@ -76,6 +78,16 @@ export function resolveSiteConfig(): SiteConfig {
 
 export function serializeSiteConfig() {
   return JSON.stringify(resolveSiteConfig()).replaceAll('<', '\\u003c')
+}
+
+export function normalizeSiteTemplate(value: unknown) {
+  return typeof value === 'string' && siteTemplateSet.has(value as SiteTemplate)
+    ? (value as SiteTemplate)
+    : undefined
+}
+
+export function getSiteTemplate(template?: SiteTemplate) {
+  return template ?? siteConfig.SITE_TEMPLATE
 }
 
 export const siteConfig = new Proxy(rawSiteConfig, {
