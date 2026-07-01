@@ -24,7 +24,7 @@ import { normalizeSiteTheme, siteThemes } from '#/lib/site-themes'
 const POKI_REQUEST_SIZE = 100
 const POKI_VISIBLE_GAME_COUNT = 60
 const POKI_TILE_SIZE = 100
-const POKI_TILE_GAP = 12
+const POKI_TILE_GAP = 16
 const POKI_LAYOUT_SEED_DAY_MS = 24 * 60 * 60 * 1000
 
 const platformOptions = [
@@ -392,7 +392,7 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
       <section className="relative overflow-hidden px-3 py-3">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.32),transparent_24rem),linear-gradient(135deg,rgba(255,255,255,0.16),transparent_35%)]" />
         <div
-          className={`relative grid grid-flow-dense auto-rows-[100px] grid-cols-[repeat(auto-fill,100px)] justify-center gap-3 ${isLoading ? 'opacity-60' : ''}`}
+          className={`relative grid grid-flow-dense auto-rows-[100px] grid-cols-[repeat(auto-fill,100px)] justify-center gap-4 ${isLoading ? 'opacity-60' : ''}`}
           ref={gridRef}
         >
           <PokiControlTiles
