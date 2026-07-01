@@ -88,6 +88,10 @@ with the same names take priority over `siteconfig.js`:
 
 `SITE_TEMPLATE` accepts `default`, `two-column`, `poki-like`, or `features`.
 
+On Cloudflare Workers, configure these as Worker variables or secrets. The app
+reads Cloudflare runtime bindings first, then falls back to `process.env`, then
+to `siteconfig.js`.
+
 ## Route Generation
 
 This project uses TanStack Router file-based routing. After changing route files, regenerate the route tree:

@@ -1,4 +1,5 @@
 import rawSiteConfig from '../../siteconfig.js'
+import { env as cloudflareEnv } from 'cloudflare:workers'
 
 export type SiteTemplate = 'default' | 'two-column' | 'poki-like' | 'features'
 
@@ -37,6 +38,10 @@ function getProcessEnv() {
   ).process?.env
 }
 
+function getCloudflareEnv() {
+  return cloudflareEnv as Partial<Record<SiteConfigKey, string | undefined>>
+}
+
 function getWindowSiteConfig() {
   return typeof window === 'undefined' ? undefined : window.__SITE_CONFIG__
 }
@@ -54,7 +59,10 @@ function normalizeConfigValue(key: SiteConfigKey, value: string | undefined) {
 }
 
 function resolveConfigValue(key: SiteConfigKey) {
-  const envValue = normalizeConfigValue(key, getProcessEnv()?.[key])
+  const envValue = normalizeConfigValue(
+    key,
+    getCloudflareEnv()?.[key] ?? getProcessEnv()?.[key],
+  )
   const windowValue = normalizeConfigValue(key, getWindowSiteConfig()?.[key])
 
   return envValue ?? windowValue ?? rawSiteConfig[key]
