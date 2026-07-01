@@ -388,9 +388,8 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
   }, [visibleTiles])
 
   return (
-    <main className="min-h-screen bg-[#25dcc6] text-base-content">
+    <main className="min-h-screen bg-primary/20 text-base-content">
       <section className="relative overflow-hidden px-3 py-3">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.32),transparent_24rem),linear-gradient(135deg,rgba(255,255,255,0.16),transparent_35%)]" />
         <div
           className={`relative grid grid-flow-dense auto-rows-[100px] grid-cols-[repeat(auto-fill,100px)] justify-center gap-4 ${isLoading ? 'opacity-60' : ''}`}
           ref={gridRef}
@@ -412,7 +411,7 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
               />
             ))
           ) : (
-            <div className="col-span-full grid min-h-[220px] place-items-center rounded-lg bg-white/70 p-8 text-center text-base-content/60 shadow">
+            <div className="col-span-full grid min-h-[220px] place-items-center rounded-lg bg-base-100/70 p-8 text-center text-base-content/60 shadow">
               {t.empty}
             </div>
           )}
