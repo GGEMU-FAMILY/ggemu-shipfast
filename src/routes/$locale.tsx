@@ -1655,7 +1655,6 @@ function GamesSection({
 }
 
 function GameCard({ game, lang }: { game: PublicGame; lang: Locale }) {
-  const t = getI18n(lang).home
   const gameId = game.url_slug || game._id || ''
   const platformBadge = getPlatformBadge(game)
 
@@ -1694,10 +1693,6 @@ function GameCard({ game, lang }: { game: PublicGame; lang: Locale }) {
         <h3 className="line-clamp-2 min-h-11 text-sm font-semibold leading-snug">
           {game.name}
         </h3>
-        <div className="mt-auto border-t border-base-300 pt-2 text-xs text-base-content/60">
-          <i className="ri-play-circle-line mr-1" />
-          {t.plays}: {game.plays_count ?? 0}
-        </div>
       </div>
     </Link>
   )
