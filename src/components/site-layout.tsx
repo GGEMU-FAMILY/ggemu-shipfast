@@ -234,7 +234,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             </div>
             <p className="mt-4 leading-6">{t.footer}</p>
             <a
-              className="mt-4 badge badge-outline badge-primary h-auto gap-2 px-3 py-2"
+              className="mt-4 badge badge-sm badge-outline gap-2 p-3"
               href="https://ggemu.com"
               target="_blank"
             >
@@ -245,7 +245,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 
           <nav className="md:min-w-32">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-base-content/45">
-              Explore
+              {t.explore}
             </p>
             <div className="flex flex-col items-start gap-2">
               <Link className="link-hover link" params={{ locale }} to="/$locale">

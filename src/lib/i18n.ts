@@ -1,14 +1,6 @@
 import type { Locale, PublicGame } from '#/lib/ggemu'
 import { siteConfig } from '#/lib/site-config'
 
-function getCopyrightText() {
-  return `Copyright © 2025 ${siteConfig.SITE_NAME}`
-}
-
-function getCopyrightDisclaimer() {
-  return `All the games ROM / programs are submitted by users or collected from the internet, and the copyrights belong to their respective owners. If you have any issues, please email ${siteConfig.SITE_EMAIL}, and we will remove the corresponding content.`
-}
-
 export function normalizeLocale(value: unknown): Locale {
   return value === 'en' || value === 'ja' ? value : 'zh-CN'
 }
@@ -26,6 +18,7 @@ export const i18n = {
   'zh-CN': {
     layout: {
       games: '首页',
+      explore: '探索',
       playMyRom: '玩本地游戏',
       about: '关于我们',
       legal: '法律',
@@ -34,10 +27,10 @@ export const i18n = {
       theme: '主题',
       language: '语言',
       get copyright() {
-        return getCopyrightText()
+        return `版权所有 © 2025 ${siteConfig.SITE_NAME}`
       },
       get disclaimer() {
-        return getCopyrightDisclaimer()
+        return `所有游戏 ROM / 程序均由用户提交或收集自互联网，版权归其各自所有者所有。如有任何问题，请发送邮件至 ${siteConfig.SITE_EMAIL}，我们会移除对应内容。`
       },
       footer:
         '直接在浏览器里游玩经典复古游戏，无需下载。覆盖掌机、主机、街机与更多平台。',
@@ -101,6 +94,7 @@ export const i18n = {
   en: {
     layout: {
       games: 'Home',
+      explore: 'Explore',
       playMyRom: 'Play My ROM',
       about: 'About Us',
       legal: 'Legal',
@@ -109,10 +103,10 @@ export const i18n = {
       theme: 'Theme',
       language: 'Language',
       get copyright() {
-        return getCopyrightText()
+        return `Copyright © 2025 ${siteConfig.SITE_NAME}`
       },
       get disclaimer() {
-        return getCopyrightDisclaimer()
+        return `All the games ROM / programs are submitted by users or collected from the internet, and the copyrights belong to their respective owners. If you have any issues, please email ${siteConfig.SITE_EMAIL}, and we will remove the corresponding content.`
       },
       footer:
         'Play classic retro games directly in your browser. No downloads required.',
@@ -180,6 +174,7 @@ export const i18n = {
   ja: {
     layout: {
       games: 'Home',
+      explore: '探す',
       playMyRom: '自分の ROM をプレイ',
       about: 'About Us',
       legal: '法的情報',
@@ -188,10 +183,10 @@ export const i18n = {
       theme: 'テーマ',
       language: '言語',
       get copyright() {
-        return getCopyrightText()
+        return `Copyright © 2025 ${siteConfig.SITE_NAME}`
       },
       get disclaimer() {
-        return getCopyrightDisclaimer()
+        return `すべてのゲーム ROM / プログラムはユーザーから投稿されたもの、またはインターネット上で収集されたものです。著作権はそれぞれの権利所有者に帰属します。問題がある場合は ${siteConfig.SITE_EMAIL} までメールでご連絡ください。該当するコンテンツを削除します。`
       },
       footer:
         'クラシックなレトロゲームをブラウザーでそのままプレイ。ダウンロードは不要です。',
