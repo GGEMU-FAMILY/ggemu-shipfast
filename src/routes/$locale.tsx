@@ -306,10 +306,10 @@ export const Route = createFileRoute('/$locale')({
     const result = await searchGames({
       data: {
         query: '',
-        limit: getHomeRequestLimit(),
+        limit: getHomeRequestLimit(template),
         locale,
         page: 1,
-        sort: 'newest',
+        sort: getHomeSort(template),
       },
     })
 
@@ -1168,16 +1168,20 @@ function HomeFaqSection({ lang }: { lang: Locale }) {
   )
 }
 
-function getHomeRequestLimit() {
-  if (siteConfig.SITE_TEMPLATE === 'poki-like') {
+function getHomeRequestLimit(template = siteConfig.SITE_TEMPLATE) {
+  if (template === 'poki-like') {
     return POKI_REQUEST_SIZE
   }
 
-  if (siteConfig.SITE_TEMPLATE === 'features') {
+  if (template === 'features') {
     return FEATURE_SECTION_LIMIT
   }
 
   return DEFAULT_HOME_REQUEST_SIZE
+}
+
+function getHomeSort(template: SiteTemplate): GameSearchSort {
+  return template === 'poki-like' ? 'popular' : 'newest'
 }
 
 async function loadFeatureGames(
