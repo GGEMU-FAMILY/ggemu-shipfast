@@ -25,6 +25,7 @@ const POKI_REQUEST_SIZE = 100
 const POKI_VISIBLE_GAME_COUNT = 60
 const POKI_TILE_SIZE = 100
 const POKI_TILE_GAP = 12
+const POKI_LAYOUT_SEED_DAY_MS = 24 * 60 * 60 * 1000
 
 const platformOptions = [
   'Game Boy Advance',
@@ -137,7 +138,9 @@ type GamesSectionProps = {
 }
 
 type HomeTemplateProps = Omit<GamesSectionProps, 'gridClassName' | 'sectionClassName'> &
-  Omit<SearchFormProps, 'mode'>
+  Omit<SearchFormProps, 'mode'> & {
+    layoutSeed: number
+  }
 
 type PokiTileSize = 1 | 2 | 3
 
@@ -153,8 +156,8 @@ type PokiPlacedTile = {
 
 const pokiTileSizeClasses: Record<PokiTileSize, string> = {
   1: 'col-span-1 row-span-1',
-  2: 'col-span-1 row-span-1 sm:col-span-2 sm:row-span-2',
-  3: 'col-span-1 row-span-1 md:col-span-3 md:row-span-3',
+  2: 'col-span-2 row-span-2',
+  3: 'col-span-2 row-span-2 md:col-span-3 md:row-span-3',
 }
 
 function getPlatformBadge(game: PublicGame) {
@@ -206,8 +209,8 @@ export const Route = createFileRoute('/$locale')({
       })
     }
   },
-  loader: ({ params }) =>
-    searchGames({
+  loader: async ({ params }) => {
+    const result = await searchGames({
       data: {
         query: '',
         limit: siteConfig.SITE_TEMPLATE === 'poki-like' ? POKI_REQUEST_SIZE : undefined,
@@ -215,7 +218,13 @@ export const Route = createFileRoute('/$locale')({
         page: 1,
         sort: 'newest',
       },
-    }),
+    })
+
+    return {
+      ...result,
+      layoutSeed: getPokiDailyLayoutSeed(),
+    }
+  },
   component: LocalizedHomePage,
 })
 
@@ -243,6 +252,7 @@ function LocalizedHomePage() {
     games,
     isLoading,
     lang,
+    layoutSeed: initialResult.layoutSeed,
     onFilterChange: updateFilter,
     onLoadPage: (nextPage: number) => loadGames(filters, nextPage),
     onQueryChange: (query: string) => {
@@ -332,10 +342,11 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
     games,
     isLoading,
     lang,
+    layoutSeed,
     t,
   } = props
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const tiles = useMemo(() => getPokiGameTiles(games), [games])
+  const tiles = useMemo(() => getPokiGameTiles(games, layoutSeed), [games, layoutSeed])
   const visibleTiles = useMemo(
     () => tiles.slice(0, POKI_VISIBLE_GAME_COUNT),
     [tiles],
@@ -381,7 +392,7 @@ function PokiLikeHomeTemplate(props: HomeTemplateProps) {
       <section className="relative overflow-hidden px-3 py-3">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.32),transparent_24rem),linear-gradient(135deg,rgba(255,255,255,0.16),transparent_35%)]" />
         <div
-          className={`relative grid grid-flow-dense auto-rows-[100px] grid-cols-[repeat(auto-fill,100px)] gap-3 ${isLoading ? 'opacity-60' : ''}`}
+          className={`relative grid grid-flow-dense auto-rows-[100px] grid-cols-[repeat(auto-fill,100px)] justify-center gap-3 ${isLoading ? 'opacity-60' : ''}`}
           ref={gridRef}
         >
           <PokiControlTiles
@@ -810,13 +821,33 @@ function HomeFaqSection({ lang }: { lang: Locale }) {
   )
 }
 
-function getPokiGameTiles(games: Array<PublicGame>) {
-  return [...games]
-    .sort((left, right) => getGameStableHash(left) - getGameStableHash(right))
-    .map((game) => ({
+function getPokiGameTiles(games: Array<PublicGame>, layoutSeed: number) {
+  const sortedGames = [...games]
+    .sort((left, right) => (
+      getPokiLayoutHash(left, layoutSeed) - getPokiLayoutHash(right, layoutSeed)
+    ))
+  const tiles: Array<PokiGameTile> = []
+  let smallTilesSinceLarge = 2
+
+  for (const game of sortedGames) {
+    const previousSize = tiles.at(-1)?.size
+    const size = getPokiBalancedTileSize(
       game,
-      size: getPokiTileSize(game),
-    })) satisfies Array<PokiGameTile>
+      layoutSeed,
+      previousSize,
+      smallTilesSinceLarge,
+    )
+
+    tiles.push({ game, size })
+
+    if (size >= 2) {
+      smallTilesSinceLarge = 0
+    } else {
+      smallTilesSinceLarge += 1
+    }
+  }
+
+  return tiles
 }
 
 function getPokiFillerCount(tiles: Array<PokiGameTile>, grid: HTMLDivElement) {
@@ -860,7 +891,7 @@ function getPokiPlacedTile(size: PokiTileSize): PokiPlacedTile {
     return { colSpan: 3, rowSpan: 3 }
   }
 
-  if (size >= 2 && window.matchMedia('(min-width: 640px)').matches) {
+  if (size >= 2) {
     return { colSpan: 2, rowSpan: 2 }
   }
 
@@ -941,8 +972,8 @@ function countPokiEmptyCells(
   return count
 }
 
-function getPokiTileSize(game: PublicGame): PokiTileSize {
-  const hash = getGameStableHash(game)
+function getPokiTileSize(game: PublicGame, layoutSeed: number): PokiTileSize {
+  const hash = getPokiLayoutHash(game, layoutSeed)
   const bucket = hash % 12
 
   if (bucket === 0) {
@@ -954,6 +985,51 @@ function getPokiTileSize(game: PublicGame): PokiTileSize {
   }
 
   return 1
+}
+
+function getPokiBalancedTileSize(
+  game: PublicGame,
+  layoutSeed: number,
+  previousSize: PokiTileSize | undefined,
+  smallTilesSinceLarge: number,
+): PokiTileSize {
+  const size = getPokiTileSize(game, layoutSeed)
+  const hash = getPokiLayoutHash(game, layoutSeed + 17)
+
+  if (size === 3 && previousSize === 3) {
+    return 2
+  }
+
+  if (size >= 2 && smallTilesSinceLarge < 3 && hash % 5 !== 0) {
+    return 1
+  }
+
+  return size
+}
+
+function getPokiDailyLayoutSeed(date = new Date()) {
+  const utcDayStart = Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+  )
+
+  return Math.floor(utcDayStart / POKI_LAYOUT_SEED_DAY_MS)
+}
+
+function getPokiLayoutHash(game: PublicGame, layoutSeed: number) {
+  return mixPokiHash(getGameStableHash(game) ^ layoutSeed)
+}
+
+function mixPokiHash(value: number) {
+  let hash = value >>> 0
+  hash ^= hash >>> 16
+  hash = Math.imul(hash, 0x7feb352d)
+  hash ^= hash >>> 15
+  hash = Math.imul(hash, 0x846ca68b)
+  hash ^= hash >>> 16
+
+  return hash >>> 0
 }
 
 function getGameStableHash(game: PublicGame) {
