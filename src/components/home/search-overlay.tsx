@@ -6,17 +6,19 @@ import { useState } from 'react'
 import type { GameFilterOptions, GameSearchResult, Locale, PublicGame } from '#/lib/ggemu'
 import { searchGames } from '#/lib/ggemu'
 
-import { FilterSelects } from './shared'
+import { FilterSelects, getSearchPlaceholder } from './shared'
 import type { Filters, HomeCopy } from './types'
 
 export function HomeSearchOverlay({
   filterOptions,
+  gameTotal,
   isOpen,
   lang,
   onClose,
   t,
 }: {
   filterOptions: GameFilterOptions
+  gameTotal: number
   isOpen: boolean
   lang: Locale
   onClose: () => void
@@ -32,6 +34,7 @@ export function HomeSearchOverlay({
   const [result, setResult] = useState<GameSearchResult | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const searchGamesList = result?.games ?? []
+  const searchPlaceholder = getSearchPlaceholder(t, gameTotal)
 
   async function searchOverlayGames(nextFilters: Filters) {
     setIsSearching(true)
@@ -98,7 +101,7 @@ export function HomeSearchOverlay({
             autoFocus={isOpen}
             className="input input-bordered w-full"
             onChange={(event) => updateFilter('query', event.currentTarget.value)}
-            placeholder={t.searchPlaceholder}
+            placeholder={searchPlaceholder}
             type="search"
             value={filters.query}
           />

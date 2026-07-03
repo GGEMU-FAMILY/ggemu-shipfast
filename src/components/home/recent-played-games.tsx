@@ -42,11 +42,11 @@ export function RecentPlayedGamesSection({
 
   return (
     <section className="bg-base-100">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
         <h2 className="text-xl font-semibold text-base-content">
           {getI18n(lang).home.recentlyPlayed}
         </h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {games.map((game) => (
             <RecentPlayedGameCard game={game} key={game.id} lang={lang} />
           ))}

@@ -19,6 +19,7 @@ export function FeaturesHomeTemplate({
   isLoading,
   lang,
   latestBlogPosts,
+  pagination,
   t,
 }: HomeTemplateProps) {
   const sections = featureSections ?? getFeatureSections({ newArrival: games })
@@ -43,7 +44,7 @@ export function FeaturesHomeTemplate({
 
       <section className="overflow-hidden bg-base-100 text-base-content">
         <div
-          className={`mx-auto flex max-w-7xl flex-col gap-7 px-4 py-5 sm:px-6 lg:px-8 ${isLoading ? 'opacity-60' : ''}`}
+          className={`mx-auto flex max-w-7xl flex-col gap-5 px-4 py-4 sm:px-6 lg:px-8 ${isLoading ? 'opacity-60' : ''}`}
         >
           {sections.map((section) => (
             <FeatureGamesSection
@@ -60,6 +61,7 @@ export function FeaturesHomeTemplate({
       <HomeFaqSection lang={lang} />
       <HomeSearchOverlay
         filterOptions={filterOptions}
+        gameTotal={pagination.total}
         isOpen={isSearchOpen}
         lang={lang}
         onClose={() => setIsSearchOpen(false)}
@@ -121,7 +123,7 @@ function FeatureGamesSection({
 
   return (
     <section className="min-w-0">
-      <div className="mb-3 flex items-center gap-3">
+      <div className="mb-2 flex items-center gap-3">
         <h2 className="text-[22px] font-black leading-none tracking-normal sm:text-2xl">
           {title}
         </h2>

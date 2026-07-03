@@ -49,8 +49,8 @@ export function HomeLatestBlogPostsSection({
 
   return (
     <section className="bg-base-100">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-3xl">
             <h2 className="text-2xl font-semibold text-base-content">
               {t.latestBlogPosts}
@@ -68,7 +68,7 @@ export function HomeLatestBlogPostsSection({
           </Link>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((post) => (
             <HomeBlogPostCard
               blogPost={post}
@@ -87,7 +87,7 @@ export function HomeFaqSection({ lang }: { lang: Locale }) {
 
   return (
     <section className="bg-base-100">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           <h2 className="text-2xl font-semibold text-base-content">{faq.title}</h2>
           <p className="mt-2 text-sm leading-6 text-base-content/65">
@@ -95,7 +95,7 @@ export function HomeFaqSection({ lang }: { lang: Locale }) {
           </p>
         </div>
 
-        <div className="mt-6 grid gap-3">
+        <div className="mt-4 grid gap-3">
           {faq.items.map((item) => (
             <article
               className="rounded-lg border border-base-300 bg-base-100 p-4"
@@ -124,15 +124,18 @@ export function SearchForm({
   onQueryChange,
   onReset,
   onSearch,
+  pagination,
   t,
 }: SearchFormProps) {
+  const searchPlaceholder = getSearchPlaceholder(t, pagination.total)
+
   if (mode === 'sidebar') {
     return (
       <form className="flex flex-col gap-3" onSubmit={onSearch}>
         <input
           className="input input-bordered w-full"
           onChange={(event) => onQueryChange(event.currentTarget.value)}
-          placeholder={t.searchPlaceholder}
+          placeholder={searchPlaceholder}
           type="search"
           value={filters.query}
         />
@@ -158,7 +161,7 @@ export function SearchForm({
         <input
           className="input input-bordered join-item min-w-0 flex-1"
           onChange={(event) => onQueryChange(event.currentTarget.value)}
-          placeholder={t.searchPlaceholder}
+          placeholder={searchPlaceholder}
           type="search"
           value={filters.query}
         />
@@ -189,7 +192,7 @@ export function FilterSelects({
   onFilterChange,
   onReset,
   t,
-}: Omit<SearchFormProps, 'mode' | 'onQueryChange' | 'onSearch'>) {
+}: Omit<SearchFormProps, 'mode' | 'onQueryChange' | 'onSearch' | 'pagination'>) {
   return (
     <>
       <select
@@ -244,6 +247,10 @@ export function FilterSelects({
   )
 }
 
+export function getSearchPlaceholder(t: HomeCopy, total: number) {
+  return `${t.searchPlaceholder} ${formatCopy(t.totalGames, { total })}`
+}
+
 export function GamesSection({
   games,
   gridClassName,
@@ -254,21 +261,24 @@ export function GamesSection({
   pages,
   pagination,
   sectionClassName,
+  showHeader = true,
   t,
 }: GamesSectionProps) {
   return (
     <section className={sectionClassName}>
-      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
-        <div>
-          <h2 className="text-2xl font-semibold">{t.featured}</h2>
-          <p className="text-sm text-base-content/60">
-            {formatCopy(t.page, { page, pages })}
-          </p>
+      {showHeader ? (
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+          <div>
+            <h2 className="text-2xl font-semibold">{t.featured}</h2>
+            <p className="text-sm text-base-content/60">
+              {formatCopy(t.page, { page, pages })}
+            </p>
+          </div>
+          <span className="text-sm text-base-content/60">
+            {pagination.total} / {pagination.limit}
+          </span>
         </div>
-        <span className="text-sm text-base-content/60">
-          {pagination.total} / {pagination.limit}
-        </span>
-      </div>
+      ) : null}
 
       {games.length > 0 ? (
         <div className={`${gridClassName} ${isLoading ? 'opacity-60' : ''}`}>
@@ -282,7 +292,7 @@ export function GamesSection({
         </div>
       )}
 
-      <div className="join mx-auto pt-2">
+      <div className="join mx-auto pt-1">
         <button
           className={`btn join-item ${page <= 1 ? 'btn-disabled' : ''}`}
           disabled={isLoading || page <= 1}

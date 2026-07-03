@@ -45,6 +45,7 @@ export type SearchFormProps = {
   onQueryChange: (query: string) => void
   onReset: () => void
   onSearch: (event: FormEvent<HTMLFormElement>) => void
+  pagination: GameSearchResult['pagination']
   t: HomeCopy
 }
 
@@ -58,6 +59,7 @@ export type GamesSectionProps = {
   pages: number
   pagination: GameSearchResult['pagination']
   sectionClassName: string
+  showHeader?: boolean
   t: HomeCopy
 }
 

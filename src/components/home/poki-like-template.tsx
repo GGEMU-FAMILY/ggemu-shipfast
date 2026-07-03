@@ -60,6 +60,7 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
     lang,
     latestBlogPosts,
     layoutSeed,
+    pagination,
     t,
   } = props
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -123,7 +124,7 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
 
   return (
     <main className="min-h-screen bg-base-100 text-base-content">
-      <section className="relative overflow-hidden px-3 py-3 pb-6">
+      <section className="relative overflow-hidden px-3 py-3 pb-4">
         <div
           className={`relative grid grid-flow-dense auto-rows-[100px] grid-cols-[repeat(auto-fill,100px)] justify-center gap-4 ${isLoading ? 'opacity-60' : ''}`}
           ref={gridRef}
@@ -165,6 +166,7 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
         </div>
         <HomeSearchOverlay
           filterOptions={filterOptions}
+          gameTotal={pagination.total}
           isOpen={isSearchOpen}
           lang={lang}
           onClose={() => setIsSearchOpen(false)}
