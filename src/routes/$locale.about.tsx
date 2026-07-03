@@ -6,16 +6,34 @@ import { getLocalizedSeoLinks, getSeoOrigin } from '#/lib/seo'
 import { siteConfig } from '#/lib/site-config'
 
 const supportedPlatforms = [
-  'Game Boy Advance (GBA)',
-  'Nintendo Entertainment System (NES)',
-  'Super Nintendo (SNES)',
-  'PlayStation 1 (PS1)',
-  'Nintendo 64 (N64)',
-  'Sega Genesis / Mega Drive',
   'Arcade',
-  'Game Boy Color (GBC)',
-  'Neo Geo',
-  'MAME',
+  'Atari Jaguar',
+  'DOS',
+  'FLASH',
+  'Famicom',
+  'Game Boy',
+  'Game Boy Advance',
+  'Game Boy Color',
+  'Game Gear',
+  'Genesis',
+  'HTML5',
+  'Java',
+  'Master System',
+  'Neo Geo Pocket Color',
+  'Nintendo 64',
+  'Nintendo DS',
+  'Nintendo Switch',
+  'PC Engine',
+  'PlayStation 1',
+  'PlayStation Portable',
+  'Sega 32X',
+  'Sega CD',
+  'Sega Genesis',
+  'Sega Saturn',
+  'Super Famicom',
+  'Virtual Boy',
+  'WonderSwan',
+  'WonderSwan Color',
 ]
 
 const aboutSections = [
@@ -57,12 +75,12 @@ export const Route = createFileRoute('/$locale/about')({
       { title: `About ${siteConfig.SITE_NAME} | Classic Games Online` },
       {
         name: 'description',
-        content: `Learn about ${siteConfig.SITE_NAME}, a browser-based classic games website for GBA, NES, SNES, PS1, N64, Sega Genesis, Arcade and other retro games online.`,
+        content: `Learn about ${siteConfig.SITE_NAME}, a browser-based classic games website for Arcade, Famicom, Game Boy, Game Boy Advance, Nintendo DS, Nintendo 64, PlayStation 1, Sega Genesis and other supported platforms online.`,
       },
       {
         name: 'keywords',
         content:
-          'classic games online, retro games online, GBA games online, NES games online, SNES games online, PS1 games online, N64 games online, Sega Genesis games, arcade games online, browser games, no download games',
+          'classic games online, retro games online, arcade games online, Famicom games online, Game Boy games online, Game Boy Advance games online, Nintendo DS games online, Nintendo 64 games online, PlayStation 1 games online, Sega Genesis games, browser games, no download games',
       },
     ],
   }),
@@ -97,16 +115,6 @@ function AboutPage() {
             games from platforms such as {platformSearchTerms}. Platform
             coverage depends on available game data and browser compatibility.
           </p>
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {supportedPlatforms.map((platform) => (
-              <li
-                className="rounded-full border border-base-300 bg-base-100 px-3 py-1 text-sm text-base-content/80"
-                key={platform}
-              >
-                {platform}
-              </li>
-            ))}
-          </ul>
         </section>
 
         <div className="mt-10 grid gap-5">
