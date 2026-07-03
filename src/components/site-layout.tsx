@@ -77,7 +77,7 @@ export function SiteLayout({
   }
 
   return (
-    <main className="min-h-screen bg-base-200 text-base-content">
+    <main className="min-h-screen bg-base-100 text-base-content">
       <header className="sticky top-0 z-40 border-b border-base-300/70 bg-base-100/90 backdrop-blur">
         <div className="navbar mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="navbar-start">

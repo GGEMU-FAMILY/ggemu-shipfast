@@ -57,6 +57,10 @@ export const i18n = {
       plays: '游玩',
       details: '查看详情',
       featured: '可在线游玩的复古游戏',
+      latestBlogPosts: '最新博客文章',
+      latestBlogSubtitle: '阅读最新游戏指南、浏览器游玩技巧和复古游戏相关文章。',
+      viewAllBlog: '查看全部文章',
+      blogPostFallback: '博客文章',
     },
     homeSeo: {
       title: '在线玩经典复古游戏 | GBA、NES、SNES、PS1、N64 免下载',
@@ -144,6 +148,11 @@ export const i18n = {
       plays: 'Plays',
       details: 'Details',
       featured: 'Playable retro games',
+      latestBlogPosts: 'Latest Blog Posts',
+      latestBlogSubtitle:
+        'Read the latest game guides, browser play tips, and retro gaming articles.',
+      viewAllBlog: 'View all posts',
+      blogPostFallback: 'Blog post',
     },
     homeSeo: {
       get title() {
@@ -233,6 +242,11 @@ export const i18n = {
       plays: 'プレイ',
       details: '詳細',
       featured: 'オンライン対応レトロゲーム',
+      latestBlogPosts: '最新ブログ記事',
+      latestBlogSubtitle:
+        '最新のゲームガイド、ブラウザーでの遊び方、レトロゲーム記事を読めます。',
+      viewAllBlog: 'すべての記事を見る',
+      blogPostFallback: 'ブログ記事',
     },
     homeSeo: {
       title: 'レトロゲームをオンラインでプレイ | ダウンロード不要',

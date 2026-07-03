@@ -137,10 +137,14 @@ async function loadLinkedGames(content: string) {
 
 function extractGgemuGameIds(content: string) {
   const gameIds = new Set<string>()
-  const pattern = /https?:\/\/ggemu\.com\/[^/\s]+\/game\/([^/?#\s]+)/g
+  const pattern = /https?:\/\/[^\s]+/g
 
   for (const match of content.matchAll(pattern)) {
-    gameIds.add(decodeURIComponent(match[1]))
+    const gameId = getGgemuGameIdFromUrl(match[0])
+
+    if (gameId) {
+      gameIds.add(gameId)
+    }
   }
 
   return gameIds
@@ -195,6 +199,10 @@ function renderBlock(
     )
   }
 
+  if (/^-{3,}$/.test(block)) {
+    return <hr className="border-base-300" key={index} />
+  }
+
   if (hasInternalGameLink(block)) {
     return (
       <div className="space-y-4" key={index}>
@@ -205,13 +213,15 @@ function renderBlock(
 
   return (
     <p className="whitespace-pre-line" key={index}>
-      {renderInlineLinks(block, locale)}
+      {renderInlineMarkdown(block, locale)}
     </p>
   )
 }
 
 function hasInternalGameLink(text: string) {
-  return /https?:\/\/ggemu\.com\/[^/\s]+\/game\/[^/?#\s]+/.test(text)
+  return text
+    .match(/https?:\/\/[^\s]+/g)
+    ?.some((urlValue) => getGgemuGameIdFromUrl(urlValue)) ?? false
 }
 
 function renderBlockWithGameCards(
@@ -238,7 +248,7 @@ function renderBlockWithGameCards(
 
   parts.forEach((part, index) => {
     if (!part.startsWith('http')) {
-      paragraphParts.push(part)
+      paragraphParts.push(...renderStrongText(part, `text-${index}`))
       return
     }
 
@@ -265,12 +275,12 @@ function renderBlockWithGameCards(
   return nodes
 }
 
-function renderInlineLinks(text: string, locale: Locale) {
+function renderInlineMarkdown(text: string, locale: Locale) {
   const parts = text.split(/(https?:\/\/[^\s]+)/g)
 
-  return parts.map((part, index) => {
+  return parts.flatMap((part, index) => {
     if (!part.startsWith('http')) {
-      return part
+      return renderStrongText(part, `text-${index}`)
     }
 
     const internalGameLink = getInternalGameLink(part, locale)
@@ -294,6 +304,20 @@ function renderInlineLinks(text: string, locale: Locale) {
     return (
       renderExternalLink(part, index)
     )
+  })
+}
+
+function renderStrongText(text: string, keyPrefix: string) {
+  return text.split(/(\*\*[^*\n]+?\*\*)/g).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong className="font-semibold text-base-content" key={`${keyPrefix}-strong-${index}`}>
+          {part.slice(2, -2)}
+        </strong>
+      )
+    }
+
+    return part
   })
 }
 
@@ -365,6 +389,20 @@ function LinkedGameCard({
 }
 
 function getInternalGameLink(urlValue: string, locale: Locale) {
+  const gameId = getGgemuGameIdFromUrl(urlValue)
+
+  if (!gameId) {
+    return undefined
+  }
+
+  return {
+    gameId,
+    label: `/${locale}/games/${gameId}`,
+    locale,
+  }
+}
+
+function getGgemuGameIdFromUrl(urlValue: string) {
   try {
     const url = new URL(urlValue)
 
@@ -372,17 +410,17 @@ function getInternalGameLink(urlValue: string, locale: Locale) {
       return undefined
     }
 
-    const [, , routeType, gameId] = url.pathname.split('/')
+    const segments = url.pathname.split('/').filter(Boolean)
+    const routeIndex = segments.findIndex(
+      (segment) => segment === 'game' || segment === 'games',
+    )
+    const gameId = routeIndex >= 0 ? segments[routeIndex + 1] : undefined
 
-    if (routeType !== 'game' || !gameId) {
+    if (!gameId) {
       return undefined
     }
 
-    return {
-      gameId,
-      label: `/${locale}/games/${gameId}`,
-      locale,
-    }
+    return decodeURIComponent(gameId)
   } catch {
     return undefined
   }

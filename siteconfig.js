@@ -1,6 +1,6 @@
 const siteConfig = {
   // DaisyUI themes separated by commas.
-  SITE_THEMES: 'cupcake,cyberpunk,night',// default, dark, light, corporate, synthwave, retro, cyberpunk, valentine, halloween, garden, forest, aqua, lofi, pastel, fantasy, wireframe, black, luxury, dracula
+  SITE_THEMES: 'cupcake,cyberpunk,night',// corporate, synthwave, retro, cyberpunk, valentine, halloween, garden, forest, aqua, lofi, pastel, fantasy, wireframe, black, luxury, dracula
   SITE_EMAIL: 'your-email@example.com',
   SITE_NAME: 'Retro Games',
   SITE_SLOGAN: 'Play Retro Games Online',
