@@ -28,6 +28,7 @@ import {
   type GameSearchSort,
   type GameSearchResult,
   type Locale,
+  getGameFilterOptions,
   searchBlogPosts,
   searchGames,
 } from '#/lib/ggemu'
@@ -110,6 +111,7 @@ export const Route = createFileRoute('/$locale')({
         topPlays,
         topLikes,
         topViews,
+        filterOptions,
         latestBlogPosts,
       ] = await Promise.all([
         getSeoOrigin(),
@@ -117,6 +119,7 @@ export const Route = createFileRoute('/$locale')({
         loadFeatureGames(locale, 'popular'),
         loadFeatureGames(locale, 'likes'),
         loadFeatureGames(locale, 'views'),
+        loadGameFilterOptions(),
         loadLatestBlogPosts(),
       ])
 
@@ -128,13 +131,14 @@ export const Route = createFileRoute('/$locale')({
           topPlays: topPlays.games,
           topViews: topViews.games,
         }),
+        filterOptions,
         layoutSeed: getPokiDailyLayoutSeed(),
         latestBlogPosts,
         seoOrigin,
       }
     }
 
-    const [seoOrigin, result, latestBlogPosts] = await Promise.all([
+    const [seoOrigin, result, filterOptions, latestBlogPosts] = await Promise.all([
       getSeoOrigin(),
       searchGames({
         data: {
@@ -145,11 +149,13 @@ export const Route = createFileRoute('/$locale')({
           sort: getHomeSort(template),
         },
       }),
+      loadGameFilterOptions(),
       loadLatestBlogPosts(),
     ])
 
     return {
       ...result,
+      filterOptions,
       layoutSeed: getPokiDailyLayoutSeed(),
       latestBlogPosts,
       seoOrigin,
@@ -218,6 +224,7 @@ function LocalizedHomePage() {
   const templateProps = {
     filters,
     featureSections: initialResult.featureSections,
+    filterOptions: initialResult.filterOptions,
     games,
     isLoading,
     lang,
@@ -320,6 +327,12 @@ async function loadLatestBlogPosts() {
   }).catch(() => null)
 
   return result?.blogPosts ?? []
+}
+
+async function loadGameFilterOptions() {
+  const result = await getGameFilterOptions().catch(() => null)
+
+  return result ?? { platforms: [], categories: [] }
 }
 
 function getHomeRequestLimit(template = siteConfig.SITE_TEMPLATE) {

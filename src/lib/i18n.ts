@@ -57,6 +57,7 @@ export const i18n = {
       plays: '游玩',
       details: '查看详情',
       featured: '可在线游玩的复古游戏',
+      recentlyPlayed: '最近玩过',
       latestBlogPosts: '最新博客文章',
       latestBlogSubtitle: '阅读最新游戏指南、浏览器游玩技巧和复古游戏相关文章。',
       viewAllBlog: '查看全部文章',
@@ -148,6 +149,7 @@ export const i18n = {
       plays: 'Plays',
       details: 'Details',
       featured: 'Playable retro games',
+      recentlyPlayed: 'Recently played',
       latestBlogPosts: 'Latest Blog Posts',
       latestBlogSubtitle:
         'Read the latest game guides, browser play tips, and retro gaming articles.',
@@ -242,6 +244,7 @@ export const i18n = {
       plays: 'プレイ',
       details: '詳細',
       featured: 'オンライン対応レトロゲーム',
+      recentlyPlayed: '最近プレイしたゲーム',
       latestBlogPosts: '最新ブログ記事',
       latestBlogSubtitle:
         '最新のゲームガイド、ブラウザーでの遊び方、レトロゲーム記事を読めます。',

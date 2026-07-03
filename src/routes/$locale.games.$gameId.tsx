@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router'
 
 import { SiteLayout } from '#/components/site-layout'
+import { saveRecentPlayedGame } from '#/components/home/recent-played-games'
 import {
   getGameDetailPageData,
   getRelatedGamePageData,
@@ -295,6 +296,7 @@ function LocalizedGameDetailPage() {
               <a
                 className="btn btn-primary btn-lg px-8 text-primary-content hover:text-primary-content"
                 href={`/${lang}/games/${gameId}/play`}
+                onClick={() => saveRecentPlayedGame(game, gameId)}
                 rel="noreferrer"
                 target="_blank"
               >

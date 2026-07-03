@@ -3,18 +3,20 @@ import { useServerFn } from '@tanstack/react-start'
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 
-import type { GameSearchResult, Locale, PublicGame } from '#/lib/ggemu'
+import type { GameFilterOptions, GameSearchResult, Locale, PublicGame } from '#/lib/ggemu'
 import { searchGames } from '#/lib/ggemu'
 
 import { FilterSelects } from './shared'
 import type { Filters, HomeCopy } from './types'
 
 export function HomeSearchOverlay({
+  filterOptions,
   isOpen,
   lang,
   onClose,
   t,
 }: {
+  filterOptions: GameFilterOptions
   isOpen: boolean
   lang: Locale
   onClose: () => void
@@ -102,6 +104,7 @@ export function HomeSearchOverlay({
           />
 
           <FilterSelects
+            filterOptions={filterOptions}
             filters={filters}
             isLoading={isSearching}
             onFilterChange={updateFilter}

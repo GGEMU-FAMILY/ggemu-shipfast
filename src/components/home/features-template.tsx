@@ -5,6 +5,7 @@ import { SiteLayout } from '#/components/site-layout'
 import type { Locale, PublicGame } from '#/lib/ggemu'
 
 import { HomeFaqSection, HomeLatestBlogPostsSection } from './shared'
+import { RecentPlayedGamesSection } from './recent-played-games'
 import { HomeSearchOverlay } from './search-overlay'
 import type { FeatureSection, HomeTemplateProps } from './types'
 
@@ -13,6 +14,7 @@ export const FEATURE_SECTION_LIMIT = 10
 
 export function FeaturesHomeTemplate({
   featureSections,
+  filterOptions,
   games,
   isLoading,
   lang,
@@ -37,6 +39,8 @@ export function FeaturesHomeTemplate({
       }
       locale={lang}
     >
+      <RecentPlayedGamesSection lang={lang} />
+
       <section className="overflow-hidden bg-base-100 text-base-content">
         <div
           className={`mx-auto flex max-w-7xl flex-col gap-7 px-4 py-5 sm:px-6 lg:px-8 ${isLoading ? 'opacity-60' : ''}`}
@@ -55,6 +59,7 @@ export function FeaturesHomeTemplate({
       <HomeLatestBlogPostsSection blogPosts={latestBlogPosts} lang={lang} />
       <HomeFaqSection lang={lang} />
       <HomeSearchOverlay
+        filterOptions={filterOptions}
         isOpen={isSearchOpen}
         lang={lang}
         onClose={() => setIsSearchOpen(false)}

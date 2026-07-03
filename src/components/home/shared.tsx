@@ -7,31 +7,6 @@ import type { GamesSectionProps, SearchFormProps } from './types'
 
 export const HOME_BLOG_POST_LIMIT = 4
 
-const platformOptions = [
-  'Game Boy Advance',
-  'NES',
-  'SNES',
-  'PS1',
-  'N64',
-  'Sega Genesis',
-  'Genesis',
-  'Arcade',
-  'Nintendo DS',
-  'Game Boy',
-  'Game Boy Color',
-  'Nintendo 64',
-  'PlayStation',
-  'PlayStation 1',
-  'Master System',
-  'Sega CD',
-  'Neo Geo',
-  'Atari',
-  'MS-DOS',
-  'HTML5',
-  'FLASH',
-  'Java',
-]
-
 const platformBadges: Record<string, string> = {
   'ARCADE': 'ARCADE',
   'Atari': 'ATARI',
@@ -57,23 +32,6 @@ const platformBadges: Record<string, string> = {
   'Sega Genesis': 'GEN',
   'Super Famicom': 'SNES',
 }
-
-const categoryOptions = [
-  'Action',
-  'Adventure',
-  'Arcade',
-  'Puzzle',
-  'RPG',
-  'Fighting',
-  'Platformer',
-  'Sports',
-  'Racing',
-  'Shooter',
-  'Strategy',
-  'Simulation',
-  'Casual',
-  'Word',
-]
 
 export function HomeLatestBlogPostsSection({
   blogPosts,
@@ -158,6 +116,7 @@ export function HomeFaqSection({ lang }: { lang: Locale }) {
 }
 
 export function SearchForm({
+  filterOptions,
   filters,
   isLoading,
   mode,
@@ -182,6 +141,7 @@ export function SearchForm({
           {t.search}
         </button>
         <FilterSelects
+          filterOptions={filterOptions}
           filters={filters}
           isLoading={isLoading}
           onFilterChange={onFilterChange}
@@ -210,6 +170,7 @@ export function SearchForm({
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]">
         <FilterSelects
+          filterOptions={filterOptions}
           filters={filters}
           isLoading={isLoading}
           onFilterChange={onFilterChange}
@@ -222,6 +183,7 @@ export function SearchForm({
 }
 
 export function FilterSelects({
+  filterOptions,
   filters,
   isLoading,
   onFilterChange,
@@ -236,9 +198,9 @@ export function FilterSelects({
         value={filters.platform}
       >
         <option value="">{t.allPlatforms}</option>
-        {platformOptions.map((platform) => (
-          <option key={platform} value={platform}>
-            {platform}
+        {filterOptions.platforms.map((platform) => (
+          <option key={platform.name} value={platform.name}>
+            {platform.name}
           </option>
         ))}
       </select>
@@ -249,9 +211,9 @@ export function FilterSelects({
         value={filters.category}
       >
         <option value="">{t.allCategories}</option>
-        {categoryOptions.map((category) => (
-          <option key={category} value={category}>
-            {category}
+        {filterOptions.categories.map((category) => (
+          <option key={category.name} value={category.name}>
+            {category.name}
           </option>
         ))}
       </select>

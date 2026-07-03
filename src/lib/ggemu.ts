@@ -56,6 +56,17 @@ export type GameSearchResult = {
   pagination: Pagination
 }
 
+export type FilterOption = {
+  name: string
+  slug?: string
+  count?: number
+}
+
+export type GameFilterOptions = {
+  platforms: Array<FilterOption>
+  categories: Array<FilterOption>
+}
+
 export type GameDetailPageData = {
   canonicalUrl: string
   game: PublicGame
@@ -120,6 +131,11 @@ type BlogPostSearchPayload = {
 type BlogPostDetailPayload = {
   id: string
   locale?: Locale
+}
+
+type FilterOptionResponse = {
+  success: true
+  data: Array<FilterOption>
 }
 
 type GameSearchResponse = {
@@ -256,6 +272,21 @@ function dedupeGames(games: Array<PublicGame>) {
   })
 }
 
+function normalizeFilterOptions(options: Array<FilterOption>) {
+  const seen = new Set<string>()
+
+  return options.filter((option) => {
+    const name = option.name?.trim()
+
+    if (!name || seen.has(name)) {
+      return false
+    }
+
+    seen.add(name)
+    return true
+  })
+}
+
 async function fetchRelatedGames({
   category,
   currentId,
@@ -332,6 +363,20 @@ export const searchGames = createServerFn({ method: 'GET' })
     addOptionalParam(params, 'sort', data.sort)
 
     return fetchGames(params)
+  })
+
+export const getGameFilterOptions = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    const emptyParams = new URLSearchParams()
+    const [platformsResult, genresResult] = await Promise.all([
+      fetchJson<FilterOptionResponse>('/api/games/platforms', emptyParams),
+      fetchJson<FilterOptionResponse>('/api/games/genres', emptyParams),
+    ])
+
+    return {
+      platforms: normalizeFilterOptions(platformsResult.data),
+      categories: normalizeFilterOptions(genresResult.data),
+    } satisfies GameFilterOptions
   })
 
 export const getGameDetail = createServerFn({ method: 'GET' })

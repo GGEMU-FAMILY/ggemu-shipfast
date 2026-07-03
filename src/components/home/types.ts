@@ -2,6 +2,7 @@ import type { FormEvent } from 'react'
 
 import type {
   BlogPost,
+  GameFilterOptions,
   GameSearchResult,
   GameSearchSort,
   Locale,
@@ -26,12 +27,14 @@ export type FeatureSection = {
 
 export type HomeLoaderData = GameSearchResult & {
   featureSections?: Array<FeatureSection>
+  filterOptions: GameFilterOptions
   layoutSeed: number
   latestBlogPosts: Array<BlogPost>
   seoOrigin: string
 }
 
 export type SearchFormProps = {
+  filterOptions: GameFilterOptions
   filters: Filters
   isLoading: boolean
   mode: 'default' | 'sidebar'

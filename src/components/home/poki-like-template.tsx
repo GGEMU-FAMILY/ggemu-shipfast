@@ -10,6 +10,10 @@ import {
   HomeFaqSection,
   HomeLatestBlogPostsSection,
 } from './shared'
+import {
+  type RecentPlayedGame,
+  useRecentPlayedGames,
+} from './recent-played-games'
 import { HomeSearchOverlay } from './search-overlay'
 import type { HomeCopy, HomeTemplateProps } from './types'
 
@@ -33,6 +37,10 @@ type PokiGameTile = {
   size: PokiTileSize
 }
 
+type PokiGridSizeTile = {
+  size: PokiTileSize
+}
+
 type PokiPlacedTile = {
   colSpan: number
   rowSpan: number
@@ -46,6 +54,7 @@ const pokiTileSizeClasses: Record<PokiTileSize, string> = {
 
 export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
   const {
+    filterOptions,
     games,
     isLoading,
     lang,
@@ -54,14 +63,31 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
     t,
   } = props
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const recentGames = useRecentPlayedGames()
   const tiles = useMemo(() => getPokiGameTiles(games, layoutSeed), [games, layoutSeed])
+  const recentGameIds = useMemo(
+    () => new Set(recentGames.map((game) => game.id)),
+    [recentGames],
+  )
+  const regularTiles = useMemo(
+    () => tiles.filter((tile) => !recentGameIds.has(getGameRouteId(tile.game))),
+    [recentGameIds, tiles],
+  )
+  const visibleTileCount = Math.max(0, POKI_VISIBLE_GAME_COUNT - recentGames.length)
   const visibleTiles = useMemo(
-    () => tiles.slice(0, POKI_VISIBLE_GAME_COUNT),
-    [tiles],
+    () => regularTiles.slice(0, visibleTileCount),
+    [regularTiles, visibleTileCount],
   )
   const reserveTiles = useMemo(
-    () => tiles.slice(POKI_VISIBLE_GAME_COUNT),
-    [tiles],
+    () => regularTiles.slice(visibleTileCount),
+    [regularTiles, visibleTileCount],
+  )
+  const fillerBaseTiles = useMemo(
+    () => [
+      ...recentGames.map((game) => ({ game, size: 1 as const })),
+      ...visibleTiles,
+    ],
+    [recentGames, visibleTiles],
   )
   const gridRef = useRef<HTMLDivElement>(null)
   const [fillerCount, setFillerCount] = useState(0)
@@ -75,7 +101,7 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
         return
       }
 
-      setFillerCount(getPokiFillerCount(visibleTiles, grid))
+      setFillerCount(getPokiFillerCount(fillerBaseTiles, grid))
     }
 
     updateFillerCount()
@@ -93,7 +119,7 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
       observer.disconnect()
       window.removeEventListener('resize', updateFillerCount)
     }
-  }, [visibleTiles])
+  }, [fillerBaseTiles])
 
   return (
     <main className="min-h-screen bg-base-100 text-base-content">
@@ -108,6 +134,10 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
             t={t}
           />
 
+          {recentGames.map((game) => (
+            <PokiRecentGameTile game={game} key={game.id} lang={lang} />
+          ))}
+
           {visibleTiles.length > 0 ? (
             visibleTiles.map((tile, index) => (
               <PokiGameCard
@@ -117,11 +147,11 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
                 size={tile.size}
               />
             ))
-          ) : (
+          ) : recentGames.length === 0 ? (
             <div className="col-span-full grid min-h-[220px] place-items-center rounded-lg bg-base-100/70 p-8 text-center text-base-content/60 shadow">
               {t.empty}
             </div>
-          )}
+          ) : null}
 
           {fillerTiles.map((tile, index) => (
             <PokiGameCard
@@ -134,6 +164,7 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
 
         </div>
         <HomeSearchOverlay
+          filterOptions={filterOptions}
           isOpen={isSearchOpen}
           lang={lang}
           onClose={() => setIsSearchOpen(false)}
@@ -144,6 +175,43 @@ export function PokiLikeHomeTemplate(props: HomeTemplateProps) {
       <HomeFaqSection lang={lang} />
       <SiteFooter locale={lang} />
     </main>
+  )
+}
+
+function PokiRecentGameTile({
+  game,
+  lang,
+}: {
+  game: RecentPlayedGame
+  lang: Locale
+}) {
+  return (
+    <Link
+      className="group relative col-span-1 row-span-1 overflow-hidden rounded-2xl bg-white shadow-lg transition duration-200 hover:scale-[1.03] hover:shadow-2xl"
+      params={{ gameId: game.id, locale: lang }}
+      search={{}}
+      to="/$locale/games/$gameId"
+    >
+      {game.cover ? (
+        <img
+          alt={game.name}
+          className="h-full w-full object-cover"
+          loading="lazy"
+          src={game.cover}
+        />
+      ) : (
+        <div className="grid h-full w-full place-items-center bg-base-200 text-xs font-semibold text-base-content/50">
+          Retro
+        </div>
+      )}
+      <span className="absolute right-0 top-0 grid h-8 w-8 place-items-start justify-items-end overflow-hidden rounded-tr-2xl">
+        <span className="h-0 w-0 border-l-[32px] border-t-[32px] border-l-transparent border-t-primary" />
+        <i className="ri-history-line absolute right-1 top-1 text-[13px] leading-none text-primary-content" />
+      </span>
+      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent px-2 pb-2 pt-8 text-[11px] font-semibold leading-tight text-white">
+        <span className="line-clamp-2">{game.name}</span>
+      </span>
+    </Link>
   )
 }
 
@@ -446,7 +514,7 @@ function getPokiGameTiles(games: Array<PublicGame>, layoutSeed: number) {
   return tiles
 }
 
-function getPokiFillerCount(tiles: Array<PokiGameTile>, grid: HTMLDivElement) {
+function getPokiFillerCount(tiles: Array<PokiGridSizeTile>, grid: HTMLDivElement) {
   const columns = getPokiGridColumns(grid)
 
   if (columns <= 0 || tiles.length === 0) {
@@ -615,6 +683,10 @@ export function getPokiDailyLayoutSeed(date = new Date()) {
 
 function getPokiLayoutHash(game: PublicGame, layoutSeed: number) {
   return mixPokiHash(getGameStableHash(game) ^ layoutSeed)
+}
+
+function getGameRouteId(game: PublicGame) {
+  return game.url_slug?.trim() || game._id?.trim() || ''
 }
 
 function mixPokiHash(value: number) {

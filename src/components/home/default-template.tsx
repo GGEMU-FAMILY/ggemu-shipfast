@@ -4,6 +4,7 @@ import {
   HomeLatestBlogPostsSection,
   SearchForm,
 } from './shared'
+import { RecentPlayedGamesSection } from './recent-played-games'
 import type { HomeTemplateProps } from './types'
 
 export function DefaultHomeTemplate(props: HomeTemplateProps) {
@@ -11,6 +12,8 @@ export function DefaultHomeTemplate(props: HomeTemplateProps) {
 
   return (
     <>
+      <RecentPlayedGamesSection lang={lang} />
+
       <section className="bg-base-100">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-10 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
