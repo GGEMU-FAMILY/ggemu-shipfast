@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { SiteLayout } from '#/components/site-layout'
 import { normalizeLocale } from '#/lib/i18n'
+import { getLocalizedSeoLinks, getSeoOrigin } from '#/lib/seo'
 import { siteConfig } from '#/lib/site-config'
 
 const supportedPlatforms = [
@@ -43,7 +44,15 @@ const aboutSections = [
 const platformSearchTerms = supportedPlatforms.join(', ')
 
 export const Route = createFileRoute('/$locale/about')({
-  head: () => ({
+  loader: () => getSeoOrigin(),
+  head: ({ loaderData, params }) => ({
+    links: loaderData
+      ? getLocalizedSeoLinks({
+          locale: normalizeLocale(params.locale),
+          origin: loaderData,
+          path: '/about',
+        })
+      : undefined,
     meta: [
       { title: `About ${siteConfig.SITE_NAME} | Classic Games Online` },
       {

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import type { Locale, PublicGame } from '#/lib/ggemu'
+import type { BlogPost, Locale, PublicGame } from '#/lib/ggemu'
 
 const GGEMU_API_BASE_URL = 'https://ggemu.com'
 const SITEMAP_PAGE_SIZE = 100
@@ -14,14 +14,25 @@ let sitemapCache: {
 } | null = null
 
 type SitemapEntry = {
+  locale: Locale
   loc: string
+  path: string
   changefreq?: 'daily' | 'weekly'
+  lastmod?: string
   priority?: number
 }
 
 type GameSearchResponse = {
   success: true
   data: Array<PublicGame>
+  pagination: {
+    pages: number
+  }
+}
+
+type BlogPostSearchResponse = {
+  success: true
+  blogPosts: Array<BlogPost>
   pagination: {
     pages: number
   }
@@ -50,8 +61,21 @@ async function getSitemapXml(origin: string) {
     return sitemapCache.xml
   }
 
-  const games = await fetchSitemapGames().catch(() => [])
-  const entries = buildSitemapEntries(origin, games)
+  let games: Array<PublicGame> = []
+  let blogPosts: Array<BlogPost> = []
+
+  try {
+    ;[games, blogPosts] = await Promise.all([
+      fetchSitemapGames(),
+      fetchSitemapBlogPosts(),
+    ])
+  } catch {
+    if (sitemapCache) {
+      return sitemapCache.xml
+    }
+  }
+
+  const entries = buildSitemapEntries(origin, games, blogPosts)
   const xml = buildSitemapXml(entries)
 
   sitemapCache = {
@@ -93,11 +117,47 @@ async function fetchGamesPage(page: number) {
   return response.json() as Promise<GameSearchResponse>
 }
 
+async function fetchSitemapBlogPosts() {
+  const firstPage = await fetchBlogPostsPage(1)
+  const pageCount = Math.min(firstPage.pagination.pages, SITEMAP_MAX_PAGES)
+  const blogPosts = [...firstPage.blogPosts]
+
+  for (let page = 2; page <= pageCount; page += 1) {
+    const result = await fetchBlogPostsPage(page)
+    blogPosts.push(...result.blogPosts)
+  }
+
+  return dedupeBlogPosts(blogPosts)
+}
+
+async function fetchBlogPostsPage(page: number) {
+  const params = new URLSearchParams({
+    limit: String(SITEMAP_PAGE_SIZE),
+    page: String(page),
+  })
+
+  const response = await fetch(`${GGEMU_API_BASE_URL}/api/blog-posts?${params}`)
+
+  if (!response.ok) {
+    throw new Error(`GGEMU blog sitemap request failed with ${response.status}`)
+  }
+
+  return response.json() as Promise<BlogPostSearchResponse>
+}
+
 function dedupeGames(games: Array<PublicGame>) {
+  return dedupeByRouteId(games, getGameRouteId)
+}
+
+function dedupeBlogPosts(blogPosts: Array<BlogPost>) {
+  return dedupeByRouteId(blogPosts, getBlogPostRouteId)
+}
+
+function dedupeByRouteId<T>(items: Array<T>, getRouteId: (item: T) => string) {
   const seen = new Set<string>()
 
-  return games.filter((game) => {
-    const id = getGameRouteId(game)
+  return items.filter((item) => {
+    const id = getRouteId(item)
 
     if (!id || seen.has(id)) {
       return false
@@ -112,38 +172,78 @@ function getGameRouteId(game: PublicGame) {
   return game.url_slug?.trim() || game._id?.trim() || ''
 }
 
-function buildSitemapEntries(origin: string, games: Array<PublicGame>) {
+function getBlogPostRouteId(blogPost: BlogPost) {
+  return blogPost.slug?.trim() || blogPost._id?.trim() || ''
+}
+
+function buildSitemapEntries(
+  origin: string,
+  games: Array<PublicGame>,
+  blogPosts: Array<BlogPost>,
+) {
   const entries: Array<SitemapEntry> = []
 
   for (const locale of locales) {
     entries.push({
-      loc: toAbsoluteUrl(origin, `/${locale}`),
+      locale,
+      loc: toAbsoluteLocalizedUrl(origin, locale, '/'),
+      path: '/',
       changefreq: 'daily',
       priority: 1,
     })
     entries.push({
-      loc: toAbsoluteUrl(origin, `/${locale}/about`),
+      locale,
+      loc: toAbsoluteLocalizedUrl(origin, locale, '/about'),
+      path: '/about',
       changefreq: 'weekly',
       priority: 0.4,
     })
     entries.push({
-      loc: toAbsoluteUrl(origin, `/${locale}/privacy-policy`),
+      locale,
+      loc: toAbsoluteLocalizedUrl(origin, locale, '/privacy-policy'),
+      path: '/privacy-policy',
       changefreq: 'weekly',
       priority: 0.3,
     })
     entries.push({
-      loc: toAbsoluteUrl(origin, `/${locale}/terms-of-service`),
+      locale,
+      loc: toAbsoluteLocalizedUrl(origin, locale, '/terms-of-service'),
+      path: '/terms-of-service',
       changefreq: 'weekly',
       priority: 0.3,
+    })
+    entries.push({
+      locale,
+      loc: toAbsoluteLocalizedUrl(origin, locale, '/blog'),
+      path: '/blog',
+      changefreq: 'weekly',
+      priority: 0.7,
     })
 
     for (const game of games) {
       const gameId = encodeURIComponent(getGameRouteId(game))
+      const path = `/games/${gameId}`
 
       entries.push({
-        loc: toAbsoluteUrl(origin, `/${locale}/games/${gameId}`),
+        locale,
+        loc: toAbsoluteLocalizedUrl(origin, locale, path),
+        path,
         changefreq: 'weekly',
         priority: 0.8,
+      })
+    }
+
+    for (const blogPost of blogPosts) {
+      const blogPostId = encodeURIComponent(getBlogPostRouteId(blogPost))
+      const path = `/blog/${blogPostId}`
+
+      entries.push({
+        locale,
+        loc: toAbsoluteLocalizedUrl(origin, locale, path),
+        path,
+        changefreq: 'weekly',
+        lastmod: blogPost.updated_at || blogPost.created_at,
+        priority: 0.6,
       })
     }
   }
@@ -151,22 +251,43 @@ function buildSitemapEntries(origin: string, games: Array<PublicGame>) {
   return entries
 }
 
-function toAbsoluteUrl(origin: string, path: string) {
-  return `${origin}${path}`
+function toAbsoluteLocalizedUrl(origin: string, locale: Locale, path: string) {
+  return path === '/' ? `${origin}/${locale}` : `${origin}/${locale}${path}`
 }
 
 function buildSitemapXml(entries: Array<SitemapEntry>) {
   const urls = entries.map(
     (entry) => `  <url>
-    <loc>${escapeXml(entry.loc)}</loc>${formatOptionalTag('changefreq', entry.changefreq)}${formatOptionalTag('priority', entry.priority)}
+    <loc>${escapeXml(entry.loc)}</loc>${formatSitemapAlternateLinks(entry)}${formatOptionalTag('lastmod', entry.lastmod)}${formatOptionalTag('changefreq', entry.changefreq)}${formatOptionalTag('priority', entry.priority)}
   </url>`,
   )
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls.join('\n')}
 </urlset>
 `
+}
+
+function formatSitemapAlternateLinks(entry: SitemapEntry) {
+  const origin = new URL(entry.loc).origin
+  const links = [
+    ...locales.map((locale) => ({
+      href: toAbsoluteLocalizedUrl(origin, locale, entry.path),
+      hrefLang: locale,
+    })),
+    {
+      href: toAbsoluteLocalizedUrl(origin, 'en', entry.path),
+      hrefLang: 'x-default',
+    },
+  ]
+
+  return links
+    .map(
+      (link) => `
+    <xhtml:link rel="alternate" hreflang="${escapeXml(link.hrefLang)}" href="${escapeXml(link.href)}" />`,
+    )
+    .join('')
 }
 
 function formatOptionalTag(name: string, value: string | number | undefined) {

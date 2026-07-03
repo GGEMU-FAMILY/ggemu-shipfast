@@ -10,6 +10,7 @@ import {
   type PublicGame,
 } from '#/lib/ggemu'
 import { getI18n, normalizeLocale } from '#/lib/i18n'
+import { getAlternateLinksFromCanonical } from '#/lib/seo'
 
 export const Route = createFileRoute('/$locale/blog/$blogId')({
   loader: async ({ params }) => {
@@ -39,7 +40,10 @@ export const Route = createFileRoute('/$locale/blog/$blogId')({
     const image = blogPost.cover_image_url
 
     return {
-      links: [{ rel: 'canonical', href: canonicalUrl }],
+      links: [
+        { rel: 'canonical', href: canonicalUrl },
+        ...getAlternateLinksFromCanonical(canonicalUrl),
+      ],
       meta: [
         { title },
         { name: 'description', content: description },

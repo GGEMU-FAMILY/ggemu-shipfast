@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { SiteLayout } from '#/components/site-layout'
 import { normalizeLocale } from '#/lib/i18n'
+import { getLocalizedSeoLinks, getSeoOrigin } from '#/lib/seo'
 
 const privacySections = [
   {
@@ -37,7 +38,15 @@ const privacySections = [
 ]
 
 export const Route = createFileRoute('/$locale/privacy-policy')({
-  head: () => ({
+  loader: () => getSeoOrigin(),
+  head: ({ loaderData, params }) => ({
+    links: loaderData
+      ? getLocalizedSeoLinks({
+          locale: normalizeLocale(params.locale),
+          origin: loaderData,
+          path: '/privacy-policy',
+        })
+      : undefined,
     meta: [
       { title: 'Privacy Policy' },
       {

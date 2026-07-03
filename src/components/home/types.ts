@@ -28,6 +28,7 @@ export type HomeLoaderData = GameSearchResult & {
   featureSections?: Array<FeatureSection>
   layoutSeed: number
   latestBlogPosts: Array<BlogPost>
+  seoOrigin: string
 }
 
 export type SearchFormProps = {

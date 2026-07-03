@@ -12,23 +12,39 @@ import {
   type Locale,
 } from '#/lib/ggemu'
 import { getI18n, normalizeLocale } from '#/lib/i18n'
+import { getLocalizedSeoLinks, getSeoOrigin } from '#/lib/seo'
 
 const BLOG_PAGE_SIZE = 12
 
 export const Route = createFileRoute('/$locale/blog')({
   loader: async () => {
-    return searchBlogPosts({
-      data: {
-        limit: BLOG_PAGE_SIZE,
-        page: 1,
-      },
-    })
+    const [seoOrigin, result] = await Promise.all([
+      getSeoOrigin(),
+      searchBlogPosts({
+        data: {
+          limit: BLOG_PAGE_SIZE,
+          page: 1,
+        },
+      }),
+    ])
+
+    return {
+      ...result,
+      seoOrigin,
+    }
   },
-  head: ({ params }) => {
+  head: ({ loaderData, params }) => {
     const locale = normalizeLocale(params.locale)
     const t = getI18n(locale).blog
 
     return {
+      links: loaderData?.seoOrigin
+        ? getLocalizedSeoLinks({
+            locale,
+            origin: loaderData.seoOrigin,
+            path: '/blog',
+          })
+        : undefined,
       meta: [
         { title: t.title },
         { name: 'description', content: t.description },

@@ -20,6 +20,7 @@ import {
   getI18n,
   normalizeLocale,
 } from '#/lib/i18n'
+import { getAlternateLinksFromCanonical } from '#/lib/seo'
 
 export const Route = createFileRoute('/$locale/games/$gameId')({
   beforeLoad: ({ location, params }) => {
@@ -71,7 +72,7 @@ export const Route = createFileRoute('/$locale/games/$gameId')({
     return {
       links: [
         { rel: 'canonical', href: canonicalUrl },
-        ...getAlternateLinks(canonicalUrl),
+        ...getAlternateLinksFromCanonical(canonicalUrl),
       ],
       meta: [
         { title: seo.title },
@@ -99,8 +100,6 @@ export const Route = createFileRoute('/$locale/games/$gameId')({
   component: LocalizedGameDetailPage,
 })
 
-const supportedLocales = ['zh-CN', 'en', 'ja'] as const satisfies ReadonlyArray<Locale>
-
 function getRelatedGames(
   relatedByCategory: Array<PublicGame>,
   relatedByDeveloper: Array<PublicGame>,
@@ -123,24 +122,6 @@ function getRelatedGames(
 
 function getGameRouteId(game: PublicGame) {
   return game.url_slug?.trim() || game._id?.trim() || ''
-}
-
-function getAlternateLinks(canonicalUrl: string) {
-  const url = new URL(canonicalUrl)
-  const [, , ...restPath] = url.pathname.split('/')
-
-  return [
-    ...supportedLocales.map((locale) => ({
-      rel: 'alternate',
-      hrefLang: locale,
-      href: `${url.origin}/${locale}/${restPath.join('/')}`,
-    })),
-    {
-      rel: 'alternate',
-      hrefLang: 'x-default',
-      href: `${url.origin}/en/${restPath.join('/')}`,
-    },
-  ]
 }
 
 function toOpenGraphLocale(locale: Locale) {

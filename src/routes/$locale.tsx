@@ -38,6 +38,7 @@ import {
   normalizeSiteTemplate,
   siteConfig,
 } from '#/lib/site-config'
+import { getLocalizedSeoLinks, getSeoOrigin } from '#/lib/seo'
 
 const DEFAULT_HOME_REQUEST_SIZE = 20
 
@@ -77,28 +78,6 @@ export const Route = createFileRoute('/$locale')({
           'X-Robots-Tag': 'noindex, nofollow',
         }
       : undefined,
-  head: ({ params, match }) => {
-    const locale = normalizeLocale(params.locale)
-    const meta = getI18n(locale).homeSeo
-    const isTemplatePreview = Boolean(getSearchTemplate(match.search))
-
-    return {
-      meta: [
-        { title: meta.title },
-        { name: 'description', content: meta.description },
-        { name: 'keywords', content: meta.keywords },
-        { property: 'og:title', content: meta.title },
-        { property: 'og:description', content: meta.description },
-        { property: 'og:type', content: 'website' },
-        { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: meta.title },
-        { name: 'twitter:description', content: meta.description },
-        ...(isTemplatePreview
-          ? [{ name: 'robots', content: 'noindex,nofollow' }]
-          : []),
-      ],
-    }
-  },
   beforeLoad: ({ location, params }) => {
     if (!location.searchStr || location.pathname !== `/${params.locale}`) {
       return undefined as never
@@ -125,7 +104,15 @@ export const Route = createFileRoute('/$locale')({
     const template = getSiteTemplate(getSearchTemplate(deps))
 
     if (template === 'features') {
-      const [newArrival, topPlays, topLikes, topViews, latestBlogPosts] = await Promise.all([
+      const [
+        seoOrigin,
+        newArrival,
+        topPlays,
+        topLikes,
+        topViews,
+        latestBlogPosts,
+      ] = await Promise.all([
+        getSeoOrigin(),
         loadFeatureGames(locale, 'newest', FEATURE_NEW_ARRIVAL_LIMIT),
         loadFeatureGames(locale, 'popular'),
         loadFeatureGames(locale, 'likes'),
@@ -143,10 +130,12 @@ export const Route = createFileRoute('/$locale')({
         }),
         layoutSeed: getPokiDailyLayoutSeed(),
         latestBlogPosts,
+        seoOrigin,
       }
     }
 
-    const [result, latestBlogPosts] = await Promise.all([
+    const [seoOrigin, result, latestBlogPosts] = await Promise.all([
+      getSeoOrigin(),
       searchGames({
         data: {
           query: '',
@@ -163,6 +152,37 @@ export const Route = createFileRoute('/$locale')({
       ...result,
       layoutSeed: getPokiDailyLayoutSeed(),
       latestBlogPosts,
+      seoOrigin,
+    }
+  },
+  head: ({ loaderData, params, match }) => {
+    const data = loaderData as unknown as HomeLoaderData | undefined
+    const locale = normalizeLocale(params.locale)
+    const meta = getI18n(locale).homeSeo
+    const isTemplatePreview = Boolean(getSearchTemplate(match.search))
+
+    return {
+      links: data?.seoOrigin
+        ? getLocalizedSeoLinks({
+            locale,
+            origin: data.seoOrigin,
+            path: '/',
+          })
+        : undefined,
+      meta: [
+        { title: meta.title },
+        { name: 'description', content: meta.description },
+        { name: 'keywords', content: meta.keywords },
+        { property: 'og:title', content: meta.title },
+        { property: 'og:description', content: meta.description },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: meta.title },
+        { name: 'twitter:description', content: meta.description },
+        ...(isTemplatePreview
+          ? [{ name: 'robots', content: 'noindex,nofollow' }]
+          : []),
+      ],
     }
   },
   component: LocalizedHomePage,
