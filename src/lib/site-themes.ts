@@ -1,8 +1,9 @@
 import { siteConfig } from './site-config'
 
-const defaultThemes = ['light', 'dark']
+const defaultTheme = 'default'
 
 const daisyThemes = [
+  'default',
   'light',
   'dark',
   'cupcake',
@@ -40,19 +41,21 @@ const daisyThemes = [
   'silk',
 ]
 
-function parseSiteThemes(value: string) {
-  return value
+function parseSiteThemes(value: string | null | undefined) {
+  return (value ?? '')
     .split(',')
     .map((theme) => theme.trim())
     .filter((theme) => daisyThemes.includes(theme))
 }
 
 export function getSiteThemes() {
-  return Array.from(
-    new Set([...defaultThemes, ...parseSiteThemes(siteConfig.SITE_THEMES)]),
-  )
+  const themes = Array.from(new Set(parseSiteThemes(siteConfig.SITE_THEMES)))
+
+  return themes.length > 0 ? themes : [defaultTheme]
 }
 
 export function normalizeSiteTheme(value: string | null) {
-  return value && getSiteThemes().includes(value) ? value : 'light'
+  const siteThemes = getSiteThemes()
+
+  return value && siteThemes.includes(value) ? value : siteThemes[0]
 }

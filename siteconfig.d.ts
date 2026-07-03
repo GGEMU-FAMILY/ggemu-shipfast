@@ -1,5 +1,5 @@
 declare const siteConfig: {
-  SITE_THEMES: string
+  SITE_THEMES: string | null
   SITE_EMAIL: string
   SITE_NAME: string
   SITE_SLOGAN: string

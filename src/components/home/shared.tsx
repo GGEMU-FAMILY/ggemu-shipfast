@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router'
 import type { BlogPost, GameSearchSort, Locale, PublicGame } from '#/lib/ggemu'
 import { formatCopy, getHomeFaqs, getI18n } from '#/lib/i18n'
 
-import type { GamesSectionProps, SearchFormProps } from './types'
+import type { GamesSectionProps, HomeCopy, SearchFormProps } from './types'
 
 export const HOME_BLOG_POST_LIMIT = 4
 

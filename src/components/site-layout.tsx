@@ -21,11 +21,12 @@ export function SiteLayout({
   const t = getI18n(locale).layout
   const location = useRouterState({ select: (state) => state.location })
   const siteThemes = getSiteThemes()
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState(() => normalizeSiteTheme(null))
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const [isLocaleMenuOpen, setIsLocaleMenuOpen] = useState(false)
   const themeMenuRef = useRef<HTMLDetailsElement>(null)
   const localeMenuRef = useRef<HTMLDetailsElement>(null)
+  const canSwitchTheme = siteThemes.length > 1
 
   useEffect(() => {
     const storedTheme = normalizeSiteTheme(
@@ -134,41 +135,43 @@ export function SiteLayout({
           <div className="navbar-end gap-2">
             {headerActions}
 
-            <details
-              className="dropdown dropdown-end"
-              onToggle={(event) => setIsThemeMenuOpen(event.currentTarget.open)}
-              open={isThemeMenuOpen}
-              ref={themeMenuRef}
-            >
-              <summary
-                className="btn btn-sm btn-ghost border border-base-300"
-                onClick={(event) => {
-                  event.preventDefault()
-                  setIsThemeMenuOpen((isOpen) => !isOpen)
-                  setIsLocaleMenuOpen(false)
-                }}
+            {canSwitchTheme ? (
+              <details
+                className="dropdown dropdown-end"
+                onToggle={(event) => setIsThemeMenuOpen(event.currentTarget.open)}
+                open={isThemeMenuOpen}
+                ref={themeMenuRef}
               >
-                <i className="ri-palette-line" />
-                {t.theme}
-              </summary>
-              <ul className="menu dropdown-content z-50 mt-3 max-h-96 w-56 overflow-y-auto rounded-box border border-base-300 bg-base-100 p-2 shadow-xl">
-                {siteThemes.map((nextTheme) => (
-                  <li key={nextTheme}>
-                    <button
-                      className={theme === nextTheme ? 'active' : ''}
-                      onClick={() => handleThemeChange(nextTheme)}
-                      type="button"
-                    >
-                      <span
-                        className="inline-block h-3 w-3 rounded-full bg-primary"
-                        data-theme={nextTheme}
-                      />
-                      <span className="capitalize">{nextTheme}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </details>
+                <summary
+                  className="btn btn-sm btn-ghost border border-base-300"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    setIsThemeMenuOpen((isOpen) => !isOpen)
+                    setIsLocaleMenuOpen(false)
+                  }}
+                >
+                  <i className="ri-palette-line" />
+                  {t.theme}
+                </summary>
+                <ul className="menu dropdown-content z-50 mt-3 max-h-96 w-56 overflow-y-auto rounded-box border border-base-300 bg-base-100 p-2 shadow-xl">
+                  {siteThemes.map((nextTheme) => (
+                    <li key={nextTheme}>
+                      <button
+                        className={theme === nextTheme ? 'active' : ''}
+                        onClick={() => handleThemeChange(nextTheme)}
+                        type="button"
+                      >
+                        <span
+                          className="inline-block h-3 w-3 rounded-full bg-primary"
+                          data-theme={nextTheme}
+                        />
+                        <span className="capitalize">{nextTheme}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : null}
 
             <details
               className="dropdown dropdown-end"

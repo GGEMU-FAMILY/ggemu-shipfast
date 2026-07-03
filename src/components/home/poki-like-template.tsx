@@ -228,11 +228,12 @@ function PokiControlTiles({
 }) {
   const location = useRouterState({ select: (state) => state.location })
   const siteThemes = getSiteThemes()
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState(() => normalizeSiteTheme(null))
   const [isLocaleMenuOpen, setIsLocaleMenuOpen] = useState(false)
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const themeMenuRef = useRef<HTMLDetailsElement>(null)
   const localeMenuRef = useRef<HTMLDetailsElement>(null)
+  const canSwitchTheme = siteThemes.length > 1
 
   useEffect(() => {
     const storedTheme = normalizeSiteTheme(
@@ -300,7 +301,11 @@ function PokiControlTiles({
         />
       </Link>
 
-      <div className="grid h-[40px] grid-cols-3 divide-x divide-slate-200">
+      <div
+        className={`grid h-[40px] divide-x divide-slate-200 ${
+          canSwitchTheme ? 'grid-cols-3' : 'grid-cols-2'
+        }`}
+      >
         <details
           className="dropdown"
           onToggle={(event) => setIsLocaleMenuOpen(event.currentTarget.open)}
@@ -332,40 +337,42 @@ function PokiControlTiles({
           </ul>
         </details>
 
-        <details
-          className="dropdown"
-          onToggle={(event) => setIsThemeMenuOpen(event.currentTarget.open)}
-          open={isThemeMenuOpen}
-          ref={themeMenuRef}
-        >
-          <summary
-            className="grid h-[40px] cursor-pointer list-none place-items-center text-xl text-violet-600 transition hover:bg-violet-50"
-            onClick={(event) => {
-              event.preventDefault()
-              setIsThemeMenuOpen((isOpen) => !isOpen)
-              setIsLocaleMenuOpen(false)
-            }}
+        {canSwitchTheme ? (
+          <details
+            className="dropdown"
+            onToggle={(event) => setIsThemeMenuOpen(event.currentTarget.open)}
+            open={isThemeMenuOpen}
+            ref={themeMenuRef}
           >
-            <i className="ri-palette-line" />
-          </summary>
-          <ul className="menu dropdown-content z-50 mt-2 max-h-96 w-56 overflow-y-auto rounded-box bg-base-100 p-2 shadow-xl">
-            {siteThemes.map((nextTheme) => (
-              <li key={nextTheme}>
-                <button
-                  className={theme === nextTheme ? 'active' : ''}
-                  onClick={() => handleThemeChange(nextTheme)}
-                  type="button"
-                >
-                  <span
-                    className="inline-block h-3 w-3 rounded-full bg-primary"
-                    data-theme={nextTheme}
-                  />
-                  <span className="capitalize">{nextTheme}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </details>
+            <summary
+              className="grid h-[40px] cursor-pointer list-none place-items-center text-xl text-violet-600 transition hover:bg-violet-50"
+              onClick={(event) => {
+                event.preventDefault()
+                setIsThemeMenuOpen((isOpen) => !isOpen)
+                setIsLocaleMenuOpen(false)
+              }}
+            >
+              <i className="ri-palette-line" />
+            </summary>
+            <ul className="menu dropdown-content z-50 mt-2 max-h-96 w-56 overflow-y-auto rounded-box bg-base-100 p-2 shadow-xl">
+              {siteThemes.map((nextTheme) => (
+                <li key={nextTheme}>
+                  <button
+                    className={theme === nextTheme ? 'active' : ''}
+                    onClick={() => handleThemeChange(nextTheme)}
+                    type="button"
+                  >
+                    <span
+                      className="inline-block h-3 w-3 rounded-full bg-primary"
+                      data-theme={nextTheme}
+                    />
+                    <span className="capitalize">{nextTheme}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ) : null}
 
         <button
           aria-label={t.search}

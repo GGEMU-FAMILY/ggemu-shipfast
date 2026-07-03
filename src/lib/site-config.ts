@@ -28,7 +28,7 @@ const siteTemplateSet = new Set<SiteTemplate>(siteTemplates)
 
 declare global {
   interface Window {
-    __SITE_CONFIG__?: Partial<Record<SiteConfigKey, string>>
+    __SITE_CONFIG__?: Partial<Record<SiteConfigKey, string | null>>
   }
 }
 
@@ -48,7 +48,14 @@ function getWindowSiteConfig() {
   return typeof window === 'undefined' ? undefined : window.__SITE_CONFIG__
 }
 
-function normalizeConfigValue(key: SiteConfigKey, value: string | undefined) {
+function normalizeConfigValue(
+  key: SiteConfigKey,
+  value: string | null | undefined,
+) {
+  if (key === 'SITE_THEMES') {
+    return value
+  }
+
   if (!value) {
     return undefined
   }
@@ -67,7 +74,15 @@ function resolveConfigValue(key: SiteConfigKey) {
   )
   const windowValue = normalizeConfigValue(key, getWindowSiteConfig()?.[key])
 
-  return envValue ?? windowValue ?? rawSiteConfig[key]
+  if (envValue !== undefined) {
+    return envValue
+  }
+
+  if (windowValue !== undefined) {
+    return windowValue
+  }
+
+  return rawSiteConfig[key]
 }
 
 export function resolveSiteConfig(): SiteConfig {
