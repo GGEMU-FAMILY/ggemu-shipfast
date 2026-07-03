@@ -4,6 +4,7 @@ import { getRequestUrl } from '@tanstack/react-start/server'
 const API_BASE_URL = 'https://ggemu.com'
 const PAGE_SIZE = 20
 const MAX_PAGE_SIZE = 100
+const NON_GCOIN_GAME = '0'
 
 export type Locale = 'zh-CN' | 'en' | 'ja'
 export type GameSearchSort =
@@ -34,6 +35,7 @@ export type PublicGame = {
   players?: number
   play_online?: number
   downloadable?: number
+  is_gcoin_game?: number
   game_cover?: string
   game_video?: string
   likes_count?: number
@@ -64,6 +66,29 @@ export type RelatedGamesData = {
   relatedByDeveloper: Array<PublicGame>
 }
 
+export type BlogPost = {
+  _id?: string
+  title?: string
+  slug?: string
+  href?: string
+  cover_image_url?: string
+  comments_count?: number
+  excerpt?: string
+  content?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export type BlogPostSearchResult = {
+  blogPosts: Array<BlogPost>
+  pagination: Pagination
+}
+
+export type BlogPostDetailPageData = {
+  blogPost: BlogPost
+  canonicalUrl: string
+}
+
 type GameSearchPayload = {
   query?: string
   locale?: Locale
@@ -85,6 +110,18 @@ type RelatedGamesPayload = {
   developer?: string
 }
 
+type BlogPostSearchPayload = {
+  keyword?: string
+  page?: number
+  limit?: number
+  includeContent?: boolean
+}
+
+type BlogPostDetailPayload = {
+  id: string
+  locale?: Locale
+}
+
 type GameSearchResponse = {
   success: true
   data: Array<PublicGame>
@@ -94,6 +131,17 @@ type GameSearchResponse = {
 type GameDetailResponse = {
   success: true
   data: PublicGame
+}
+
+type BlogPostSearchResponse = {
+  success: true
+  blogPosts: Array<BlogPost>
+  pagination: Pagination
+}
+
+type BlogPostDetailResponse = {
+  success: true
+  blogPost: BlogPost
 }
 
 function normalizePage(page: unknown) {
@@ -145,7 +193,8 @@ function addOptionalParam(
 }
 
 async function fetchJson<T>(path: string, params: URLSearchParams) {
-  const response = await fetch(`${API_BASE_URL}${path}?${params.toString()}`)
+  const query = params.toString()
+  const response = await fetch(`${API_BASE_URL}${path}${query ? `?${query}` : ''}`)
 
   if (!response.ok) {
     throw new Error(`GGEMU API request failed with ${response.status}`)
@@ -171,6 +220,21 @@ function getAbsoluteGameUrl(origin: string, locale: Locale, game: PublicGame, fa
   const id = encodeURIComponent(getGameId(game) || fallbackId)
 
   return `${origin}/${locale}/games/${id}`
+}
+
+function getBlogPostId(blogPost: BlogPost) {
+  return blogPost.slug?.trim() || blogPost._id?.trim() || ''
+}
+
+function getAbsoluteBlogPostUrl(
+  origin: string,
+  locale: Locale,
+  blogPost: BlogPost,
+  fallbackId: string,
+) {
+  const id = encodeURIComponent(getBlogPostId(blogPost) || fallbackId)
+
+  return `${origin}/${locale}/blog/${id}`
 }
 
 function isSameGame(game: PublicGame, id: string) {
@@ -202,12 +266,14 @@ async function fetchRelatedGames({
   developer?: string
 }) {
   const categoryParams = new URLSearchParams({
+    is_gcoin_game: NON_GCOIN_GAME,
     limit: '8',
     page: '1',
     play_online: '1',
     sort: 'popular',
   })
   const developerParams = new URLSearchParams({
+    is_gcoin_game: NON_GCOIN_GAME,
     limit: '8',
     page: '1',
     play_online: '1',
@@ -233,6 +299,15 @@ async function fetchRelatedGames({
   return { relatedByCategory, relatedByDeveloper }
 }
 
+async function fetchBlogPosts(params: URLSearchParams) {
+  const result = await fetchJson<BlogPostSearchResponse>('/api/blog-posts', params)
+
+  return {
+    blogPosts: result.blogPosts,
+    pagination: result.pagination,
+  } satisfies BlogPostSearchResult
+}
+
 export const searchGames = createServerFn({ method: 'GET' })
   .validator((payload: GameSearchPayload) => ({
     query: payload.query ?? '',
@@ -245,6 +320,7 @@ export const searchGames = createServerFn({ method: 'GET' })
   }))
   .handler(async ({ data }) => {
     const params = new URLSearchParams({
+      is_gcoin_game: NON_GCOIN_GAME,
       page: String(data.page),
       limit: String(data.limit),
       play_online: '1',
@@ -294,4 +370,49 @@ export const getRelatedGamePageData = createServerFn({ method: 'GET' })
   }))
   .handler(async ({ data }) => {
     return fetchRelatedGames(data) satisfies Promise<RelatedGamesData>
+  })
+
+export const searchBlogPosts = createServerFn({ method: 'GET' })
+  .validator((payload: BlogPostSearchPayload) => ({
+    keyword: payload.keyword ?? '',
+    page: normalizePage(payload.page),
+    limit: normalizeLimit(payload.limit),
+    includeContent: payload.includeContent ?? false,
+  }))
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams({
+      page: String(data.page),
+      limit: String(data.limit),
+    })
+
+    addOptionalParam(params, 'keyword', data.keyword)
+
+    if (data.includeContent) {
+      params.set('includeContent', '1')
+    }
+
+    return fetchBlogPosts(params)
+  })
+
+export const getBlogPostDetailPageData = createServerFn({ method: 'GET' })
+  .validator((payload: BlogPostDetailPayload) => ({
+    id: payload.id,
+    locale: normalizeLocale(payload.locale),
+  }))
+  .handler(async ({ data }) => {
+    const result = await fetchJson<BlogPostDetailResponse>(
+      `/api/blog-posts/${encodeURIComponent(data.id)}`,
+      new URLSearchParams(),
+    )
+    const origin = getRequestUrl({ xForwardedHost: true }).origin
+
+    return {
+      blogPost: result.blogPost,
+      canonicalUrl: getAbsoluteBlogPostUrl(
+        origin,
+        data.locale,
+        result.blogPost,
+        data.id,
+      ),
+    } satisfies BlogPostDetailPageData
   })

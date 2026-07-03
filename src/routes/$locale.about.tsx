@@ -2,17 +2,31 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { SiteLayout } from '#/components/site-layout'
 import { normalizeLocale } from '#/lib/i18n'
+import { siteConfig } from '#/lib/site-config'
+
+const supportedPlatforms = [
+  'Game Boy Advance (GBA)',
+  'Nintendo Entertainment System (NES)',
+  'Super Nintendo (SNES)',
+  'PlayStation 1 (PS1)',
+  'Nintendo 64 (N64)',
+  'Sega Genesis / Mega Drive',
+  'Arcade',
+  'Game Boy Color (GBC)',
+  'Neo Geo',
+  'MAME',
+]
 
 const aboutSections = [
   {
     title: 'What this site offers',
     body:
-      'This website provides a browser-based way to discover and play classic games online. Visitors can browse a game library, search by title or platform, open game detail pages, and start playable games directly from the browser.',
+      'This website provides a browser-based way to discover and play classic games online. Visitors can browse a game library, search by title, platform, genre, or series, open game detail pages, and start playable games directly from the browser.',
   },
   {
-    title: 'Game discovery',
+    title: 'Game search and discovery',
     body:
-      'The catalog is organized to help users find games by name, platform, category, and popularity. Search and filtering tools are intended to make it easier to locate a specific title or explore games from a preferred system.',
+      'The catalog is organized for common search intent such as play GBA games online, NES games in browser, SNES classics, PS1 games online, N64 games, Sega Genesis titles, arcade games, and no-download retro games.',
   },
   {
     title: 'Browser play',
@@ -26,14 +40,20 @@ const aboutSections = [
   },
 ]
 
+const platformSearchTerms = supportedPlatforms.join(', ')
+
 export const Route = createFileRoute('/$locale/about')({
   head: () => ({
     meta: [
-      { title: 'About' },
+      { title: `About ${siteConfig.SITE_NAME} | Classic Games Online` },
       {
         name: 'description',
+        content: `Learn about ${siteConfig.SITE_NAME}, a browser-based classic games website for GBA, NES, SNES, PS1, N64, Sega Genesis, Arcade and other retro games online.`,
+      },
+      {
+        name: 'keywords',
         content:
-          'Learn about this browser-based classic games website and how visitors can discover and play games online.',
+          'classic games online, retro games online, GBA games online, NES games online, SNES games online, PS1 games online, N64 games online, Sega Genesis games, arcade games online, browser games, no download games',
       },
     ],
   }),
@@ -43,6 +63,7 @@ export const Route = createFileRoute('/$locale/about')({
 function AboutPage() {
   const { locale } = Route.useParams()
   const lang = normalizeLocale(locale)
+  const siteName = siteConfig.SITE_NAME
 
   return (
     <SiteLayout locale={lang}>
@@ -51,14 +72,33 @@ function AboutPage() {
           About
         </p>
         <h1 className="mt-3 text-4xl font-semibold leading-tight">
-          About this website
+          About {siteName}
         </h1>
         <p className="mt-5 text-base leading-7 text-base-content/70">
-          This website is built for visitors who want a simple way to browse,
+          {siteName} is built for visitors who want a simple way to browse,
           search, and play classic games in the browser. The focus is fast
-          discovery, clear game information, and direct access to playable
-          titles when available.
+          discovery across supported platforms, clear game information, and
+          direct access to playable titles when available.
         </p>
+
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold">Supported game platforms</h2>
+          <p className="mt-3 leading-7 text-base-content/70">
+            The catalog is designed for players searching for classic and retro
+            games from platforms such as {platformSearchTerms}. Platform
+            coverage depends on available game data and browser compatibility.
+          </p>
+          <ul className="mt-5 flex flex-wrap gap-2">
+            {supportedPlatforms.map((platform) => (
+              <li
+                className="rounded-full border border-base-300 bg-base-100 px-3 py-1 text-sm text-base-content/80"
+                key={platform}
+              >
+                {platform}
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <div className="mt-10 grid gap-5">
           {aboutSections.map((section) => (

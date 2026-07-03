@@ -77,6 +77,7 @@ async function fetchSitemapGames() {
 
 async function fetchGamesPage(page: number) {
   const params = new URLSearchParams({
+    is_gcoin_game: '0',
     limit: String(SITEMAP_PAGE_SIZE),
     page: String(page),
     play_online: '1',

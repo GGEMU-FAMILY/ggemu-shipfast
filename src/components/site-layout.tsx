@@ -116,6 +116,12 @@ export function SiteLayout({
                   </Link>
                 </li>
                 <li>
+                  <Link params={{ locale }} to="/$locale/blog">
+                    <i className="ri-article-line" />
+                    {t.blog}
+                  </Link>
+                </li>
+                <li>
                   <Link params={{ locale }} to="/$locale/about">
                     <i className="ri-information-line" />
                     {t.about}
@@ -259,6 +265,10 @@ export function SiteFooter({ locale }: { locale: Locale }) {
               >
                 <i className="ri-gamepad-line mr-1" />
                 {t.playMyRom}
+              </Link>
+              <Link className="link-hover link" params={{ locale }} to="/$locale/blog">
+                <i className="ri-article-line mr-1" />
+                {t.blog}
               </Link>
               <Link
                 className="link-hover link"

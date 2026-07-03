@@ -18,11 +18,13 @@ import { Route as GamesGameIdRouteImport } from './routes/games/$gameId'
 import { Route as LocaleTermsOfServiceRouteImport } from './routes/$locale.terms-of-service'
 import { Route as LocalePrivacyPolicyRouteImport } from './routes/$locale.privacy-policy'
 import { Route as LocalePlayMyRomRouteImport } from './routes/$locale.play-my-rom'
+import { Route as LocaleBlogRouteImport } from './routes/$locale.blog'
 import { Route as LocaleAboutRouteImport } from './routes/$locale.about'
 import { Route as GamesGameIdPlayRouteImport } from './routes/games/$gameId/play'
 import { Route as UsernameStatusStatusidRouteImport } from './routes/$username/status/$statusid'
 import { Route as UsernameArticleStatusidRouteImport } from './routes/$username/article/$statusid'
 import { Route as LocaleGamesGameIdRouteImport } from './routes/$locale.games.$gameId'
+import { Route as LocaleBlogBlogIdRouteImport } from './routes/$locale.blog.$blogId'
 import { Route as LocaleGamesGameIdPlayRouteImport } from './routes/$locale.games.$gameId.play'
 
 const XRoute = XRouteImport.update({
@@ -70,6 +72,11 @@ const LocalePlayMyRomRoute = LocalePlayMyRomRouteImport.update({
   path: '/play-my-rom',
   getParentRoute: () => LocaleRoute,
 } as any)
+const LocaleBlogRoute = LocaleBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => LocaleRoute,
+} as any)
 const LocaleAboutRoute = LocaleAboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -95,6 +102,11 @@ const LocaleGamesGameIdRoute = LocaleGamesGameIdRouteImport.update({
   path: '/games/$gameId',
   getParentRoute: () => LocaleRoute,
 } as any)
+const LocaleBlogBlogIdRoute = LocaleBlogBlogIdRouteImport.update({
+  id: '/$blogId',
+  path: '/$blogId',
+  getParentRoute: () => LocaleBlogRoute,
+} as any)
 const LocaleGamesGameIdPlayRoute = LocaleGamesGameIdPlayRouteImport.update({
   id: '/play',
   path: '/play',
@@ -108,10 +120,12 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/blog': typeof LocaleBlogRouteWithChildren
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
+  '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
@@ -125,10 +139,12 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/blog': typeof LocaleBlogRouteWithChildren
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
+  '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
@@ -143,10 +159,12 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
+  '/$locale/blog': typeof LocaleBlogRouteWithChildren
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
+  '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
@@ -162,10 +180,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/blog'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
+    | '/$locale/blog/$blogId'
     | '/$locale/games/$gameId'
     | '/$username/article/$statusid'
     | '/$username/status/$statusid'
@@ -179,10 +199,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/blog'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
+    | '/$locale/blog/$blogId'
     | '/$locale/games/$gameId'
     | '/$username/article/$statusid'
     | '/$username/status/$statusid'
@@ -196,10 +218,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/x'
     | '/$locale/about'
+    | '/$locale/blog'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
+    | '/$locale/blog/$blogId'
     | '/$locale/games/$gameId'
     | '/$username/article/$statusid'
     | '/$username/status/$statusid'
@@ -283,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocalePlayMyRomRouteImport
       parentRoute: typeof LocaleRoute
     }
+    '/$locale/blog': {
+      id: '/$locale/blog'
+      path: '/blog'
+      fullPath: '/$locale/blog'
+      preLoaderRoute: typeof LocaleBlogRouteImport
+      parentRoute: typeof LocaleRoute
+    }
     '/$locale/about': {
       id: '/$locale/about'
       path: '/about'
@@ -318,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleGamesGameIdRouteImport
       parentRoute: typeof LocaleRoute
     }
+    '/$locale/blog/$blogId': {
+      id: '/$locale/blog/$blogId'
+      path: '/$blogId'
+      fullPath: '/$locale/blog/$blogId'
+      preLoaderRoute: typeof LocaleBlogBlogIdRouteImport
+      parentRoute: typeof LocaleBlogRoute
+    }
     '/$locale/games/$gameId/play': {
       id: '/$locale/games/$gameId/play'
       path: '/play'
@@ -327,6 +365,18 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface LocaleBlogRouteChildren {
+  LocaleBlogBlogIdRoute: typeof LocaleBlogBlogIdRoute
+}
+
+const LocaleBlogRouteChildren: LocaleBlogRouteChildren = {
+  LocaleBlogBlogIdRoute: LocaleBlogBlogIdRoute,
+}
+
+const LocaleBlogRouteWithChildren = LocaleBlogRoute._addFileChildren(
+  LocaleBlogRouteChildren,
+)
 
 interface LocaleGamesGameIdRouteChildren {
   LocaleGamesGameIdPlayRoute: typeof LocaleGamesGameIdPlayRoute
@@ -341,6 +391,7 @@ const LocaleGamesGameIdRouteWithChildren =
 
 interface LocaleRouteChildren {
   LocaleAboutRoute: typeof LocaleAboutRoute
+  LocaleBlogRoute: typeof LocaleBlogRouteWithChildren
   LocalePlayMyRomRoute: typeof LocalePlayMyRomRoute
   LocalePrivacyPolicyRoute: typeof LocalePrivacyPolicyRoute
   LocaleTermsOfServiceRoute: typeof LocaleTermsOfServiceRoute
@@ -349,6 +400,7 @@ interface LocaleRouteChildren {
 
 const LocaleRouteChildren: LocaleRouteChildren = {
   LocaleAboutRoute: LocaleAboutRoute,
+  LocaleBlogRoute: LocaleBlogRouteWithChildren,
   LocalePlayMyRomRoute: LocalePlayMyRomRoute,
   LocalePrivacyPolicyRoute: LocalePrivacyPolicyRoute,
   LocaleTermsOfServiceRoute: LocaleTermsOfServiceRoute,

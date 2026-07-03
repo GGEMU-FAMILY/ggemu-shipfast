@@ -20,6 +20,7 @@ export const i18n = {
       games: '首页',
       explore: '探索',
       playMyRom: '玩本地游戏',
+      blog: '博客',
       about: '关于我们',
       legal: '法律',
       privacyPolicy: '隐私政策',
@@ -90,12 +91,21 @@ export const i18n = {
         return `关于 ${siteConfig.SITE_NAME} 在线复古游戏网站。`
       },
     },
+    blog: {
+      title: '博客',
+      description: '阅读游戏指南、浏览器游玩技巧和复古游戏相关文章。',
+      subtitle: '阅读游戏指南、浏览器游玩技巧和复古游戏相关文章。',
+      eyebrow: 'Blog',
+      empty: '暂无文章',
+      total: '共 {total} 篇文章',
+    },
   },
   en: {
     layout: {
       games: 'Home',
       explore: 'Explore',
       playMyRom: 'Play My ROM',
+      blog: 'Blog',
       about: 'About Us',
       legal: 'Legal',
       privacyPolicy: 'Privacy Policy',
@@ -170,13 +180,24 @@ export const i18n = {
         return `About ${siteConfig.SITE_NAME}, a browser-based classic retro games website.`
       },
     },
+    blog: {
+      title: 'Blog',
+      description:
+        'Read game guides, browser play tips, and retro gaming articles.',
+      subtitle:
+        'Read game guides, browser play tips, and retro gaming articles.',
+      eyebrow: 'Blog',
+      empty: 'No posts yet',
+      total: '{total} posts',
+    },
   },
   ja: {
     layout: {
-      games: 'Home',
+      games: 'ホーム',
       explore: '探す',
       playMyRom: '自分の ROM をプレイ',
-      about: 'About Us',
+      blog: 'ブログ',
+      about: '私たちについて',
       legal: '法的情報',
       privacyPolicy: 'プライバシーポリシー',
       termsOfService: '利用規約',
@@ -245,6 +266,16 @@ export const i18n = {
       get description() {
         return `ブラウザーで遊べるレトロゲームサイト ${siteConfig.SITE_NAME} について。`
       },
+    },
+    blog: {
+      title: 'ブログ',
+      description:
+        'ゲームガイド、ブラウザーでの遊び方、レトロゲーム記事を読めます。',
+      subtitle:
+        'ゲームガイド、ブラウザーでの遊び方、レトロゲーム記事を読めます。',
+      eyebrow: 'ブログ',
+      empty: '記事はまだありません',
+      total: '全 {total} 件の記事',
     },
   },
 } satisfies Record<Locale, Record<string, Record<string, string>>>
