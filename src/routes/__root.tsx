@@ -10,6 +10,7 @@ import {
 import { ThirdPartyScripts } from '#/components/third-party-scripts'
 import { getDocumentLang, getSeoOrigin } from '#/lib/seo'
 import { serializeSiteConfig, siteConfig } from '#/lib/site-config'
+import { getSiteThemeInitScript } from '#/lib/site-themes'
 import appCss from '../styles.css?url'
 
 const defaultSocialImagePath = '/og.png'
@@ -139,6 +140,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang={getDocumentLang(pathname)}>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: getSiteThemeInitScript(),
+          }}
+        />
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{

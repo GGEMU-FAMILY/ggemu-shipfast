@@ -59,3 +59,22 @@ export function normalizeSiteTheme(value: string | null) {
 
   return value && siteThemes.includes(value) ? value : siteThemes[0]
 }
+
+export function getSiteThemeInitScript() {
+  const siteThemes = getSiteThemes()
+  const fallbackTheme = siteThemes[0] ?? defaultTheme
+
+  return `
+(() => {
+  try {
+    const themes = ${JSON.stringify(siteThemes)}
+    const storedTheme = window.localStorage.getItem('retro-games-theme')
+    document.documentElement.dataset.theme = themes.includes(storedTheme)
+      ? storedTheme
+      : ${JSON.stringify(fallbackTheme)}
+  } catch {
+    document.documentElement.dataset.theme = ${JSON.stringify(fallbackTheme)}
+  }
+})()
+`
+}
