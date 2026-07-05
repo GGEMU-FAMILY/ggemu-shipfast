@@ -1,6 +1,6 @@
-# GGEMU-FASTSHIP
+# GGEMU-SHIPFAST
 
-GGEMU-FASTSHIP is a high-quality game website template that makes it easy for anyone to launch and operate their own online gaming site.
+GGEMU-SHIPFAST is a high-quality game website template that makes it easy for anyone to launch and operate their own online gaming site.
 
 The project is rebuilt with Tanstarter and designed for fast deployment, including one-click deployment on Cloudflare. It provides a ready-to-use foundation for building a game portal with online play, a shared game database, and monetization through advertising platforms.
 
@@ -16,7 +16,7 @@ The project is rebuilt with Tanstarter and designed for fast deployment, includi
 
 ## Supported Game Platforms
 
-GGEMU-FASTSHIP supports online gameplay across many platforms, including:
+GGEMU-SHIPFAST supports online gameplay across many platforms, including:
 
 - Arcade
 - Flash
@@ -86,7 +86,7 @@ with the same names take priority over `siteconfig.js`:
 - `GOOGLE_ADSENSE_CLIENT`
 - `GOOGLE_ANALYTICS_ID`
 
-`SITE_TEMPLATE` accepts `default`, `two-column`, `poki-like`, or `features`.
+`SITE_TEMPLATE` accepts `default`, `two-column`, `poki-like`.
 
 On Cloudflare Workers, configure these as Worker variables or secrets. The app
 reads Cloudflare runtime bindings first, then falls back to `process.env`, then
@@ -104,7 +104,7 @@ Do not edit `src/routeTree.gen.ts` manually.
 
 ## Deployment
 
-GGEMU-FASTSHIP is designed to be deployed easily on Cloudflare. Choose the Cloudflare deployment flow for your environment, connect the repository, build the project, and publish the generated output.
+GGEMU-SHIPFAST is designed to be deployed easily on Cloudflare. Choose the Cloudflare deployment flow for your environment, connect the repository, build the project, and publish the generated output.
 
 ## Tech Stack
 
@@ -114,3 +114,12 @@ GGEMU-FASTSHIP is designed to be deployed easily on Cloudflare. Choose the Cloud
 - Vite
 - TypeScript
 - npm
+
+## License
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for
+details.
+
+Attribution notices are provided in [NOTICE](./NOTICE). Redistributed copies or
+derivative works must retain the required copyright, license, and attribution
+notices as described by the license.

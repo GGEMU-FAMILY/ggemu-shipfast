@@ -1,6 +1,7 @@
 {
   "name": "my-tanstack-app",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "imports": {
     "#/*": "./src/*"
