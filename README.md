@@ -4,6 +4,12 @@ GGEMU-SHIPFAST is a high-quality game website template that makes it easy for an
 
 The project is rebuilt with Tanstarter and designed for fast deployment, including one-click deployment on Cloudflare. It provides a ready-to-use foundation for building a game portal with online play, a shared game database, and monetization through advertising platforms.
 
+## Deployment
+
+GGEMU-SHIPFAST is designed to be deployed easily on Cloudflare. Choose the Cloudflare deployment flow for your environment, connect the repository, build the project, and publish the generated output.
+
+ [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/GGEMU-FAMILY/ggemu-shipfast)
+
 ## Features
 
 - High-quality website template for launching a game portal quickly
@@ -46,32 +52,6 @@ GGEMU-SHIPFAST supports online gameplay across many platforms, including:
 
 After applying to and joining supported advertising platforms, site owners can place ads on their game website and earn advertising revenue from traffic.
 
-## Getting Started
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the local development server:
-
-```bash
-npm run dev
-```
-
-Build for production:
-
-```bash
-npm run build
-```
-
-Preview the production build:
-
-```bash
-npm run preview
-```
-
 ## Site Configuration
 
 Default site settings live in `siteconfig.js`. Runtime environment variables
@@ -91,20 +71,6 @@ with the same names take priority over `siteconfig.js`:
 On Cloudflare Workers, configure these as Worker variables or secrets. The app
 reads Cloudflare runtime bindings first, then falls back to `process.env`, then
 to `siteconfig.js`.
-
-## Route Generation
-
-This project uses TanStack Router file-based routing. After changing route files, regenerate the route tree:
-
-```bash
-npm run generate-routes
-```
-
-Do not edit `src/routeTree.gen.ts` manually.
-
-## Deployment
-
-GGEMU-SHIPFAST is designed to be deployed easily on Cloudflare. Choose the Cloudflare deployment flow for your environment, connect the repository, build the project, and publish the generated output.
 
 ## Tech Stack
 
