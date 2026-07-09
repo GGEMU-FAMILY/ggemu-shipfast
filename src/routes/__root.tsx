@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useState } from 'react'
 import {
   HeadContent,
   Outlet,
@@ -14,6 +15,7 @@ import { getSiteThemeInitScript } from '#/lib/site-themes'
 import appCss from '../styles.css?url'
 
 const defaultSocialImagePath = '/og.png'
+const secretGameUrl = 'https://clever-spider-5915.puter.site/'
 
 function getDefaultSocialImage(origin?: string) {
   return origin ? `${origin}${defaultSocialImagePath}` : defaultSocialImagePath
@@ -127,11 +129,103 @@ export const Route = createRootRoute({
     }
   },
   component: RootComponent,
+  errorComponent: MaintenanceErrorComponent,
   shellComponent: RootDocument,
 })
 
 function RootComponent() {
   return <Outlet />
+}
+
+function MaintenanceErrorComponent() {
+  const [isSecretGameVisible, setIsSecretGameVisible] = useState(false)
+  const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const locale = getDocumentLang(pathname)
+  const messages = getMaintenanceMessages(locale)
+
+  if (isSecretGameVisible) {
+    return (
+      <main className="min-h-screen bg-base-100 px-4 py-6 text-base-content sm:px-6 lg:px-8">
+        <section className="mx-auto flex max-w-7xl flex-col gap-5">
+          <div className="flex items-center gap-3">
+            <img
+              alt={siteConfig.SITE_NAME}
+              className="h-12 w-12 rounded-xl object-contain"
+              src="/logo.png"
+            />
+            <div>
+              <h1 className="text-xl font-semibold leading-tight">
+                {siteConfig.SITE_NAME}
+              </h1>
+              <p className="text-sm font-medium text-primary">
+                {siteConfig.SITE_SLOGAN}
+              </p>
+            </div>
+          </div>
+          <iframe
+            allow="fullscreen"
+            className="h-[calc(100vh-7.5rem)] min-h-[30rem] w-full rounded-box border border-base-300 bg-base-200"
+            src={secretGameUrl}
+            title="Secret Game"
+          />
+        </section>
+      </main>
+    )
+  }
+
+  return (
+    <main className="min-h-screen bg-base-100 px-4 py-16 text-base-content sm:px-6 lg:px-8">
+      <section className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center text-center">
+        <img
+          alt={siteConfig.SITE_NAME}
+          className="h-20 w-20 rounded-2xl object-contain"
+          src="/logo.png"
+        />
+        <h1 className="mt-5 text-3xl font-semibold leading-tight sm:text-4xl">
+          {siteConfig.SITE_NAME}
+        </h1>
+        <p className="mt-2 text-base font-medium text-primary">
+          {siteConfig.SITE_SLOGAN}
+        </p>
+        <h2 className="mt-8 text-2xl font-semibold leading-tight sm:text-3xl">
+          {messages.title}
+        </h2>
+        <p className="mt-4 max-w-xl text-base leading-7 text-base-content/70">
+          {messages.description}
+        </p>
+        <button
+          className="btn btn-primary mt-8"
+          onClick={() => {
+            setIsSecretGameVisible(true)
+          }}
+          type="button"
+        >
+          Play A Secret Game
+        </button>
+      </section>
+    </main>
+  )
+}
+
+function getMaintenanceMessages(locale: string) {
+  if (locale === 'en') {
+    return {
+      title: 'The server is under maintenance',
+      description: 'Scheduled maintenance is in progress. We will be back online shortly.',
+    }
+  }
+
+  if (locale === 'ja') {
+    return {
+      title: 'サーバーは現在メンテナンス中です',
+      description: '予定されたメンテナンスを実施しています。まもなく再開します。',
+    }
+  }
+
+  return {
+    title: '当前服务器正在维护',
+    description: '我们正在进行计划维护，很快就会恢复访问。',
+  }
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
