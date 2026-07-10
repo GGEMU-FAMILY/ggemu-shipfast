@@ -282,7 +282,7 @@ function LocalizedGameDetailPage() {
                   </span>
                 ) : null}
               </div>
-              <h1 className="max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl">
+              <h1 className="line-clamp-2 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl">
                 {game.name}
               </h1>
               {game.description ? (

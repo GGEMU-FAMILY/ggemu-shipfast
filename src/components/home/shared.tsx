@@ -27,7 +27,9 @@ const platformBadges: Record<string, string> = {
   'Nintendo 64': 'N64',
   'Nintendo DS': 'NDS',
   'PlayStation 1': 'PS1',
+  'PlayStation Portable': 'PSP',
   'PS1': 'PS1',
+  'PSP': 'PSP',
   'Sega CD': 'SCD',
   'Sega Genesis': 'GEN',
   'Super Famicom': 'SNES',
@@ -397,7 +399,7 @@ function GameCard({ game, lang }: { game: PublicGame; lang: Locale }) {
         ) : null}
         <span className="absolute inset-0 grid place-items-center bg-base-300/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <span className="grid h-12 w-12 place-items-center rounded-full bg-primary text-2xl text-primary-content shadow-lg">
-            <i className="ri-play-fill" />
+            <i className="ri-play-fill text-primary-content" />
           </span>
         </span>
       </figure>

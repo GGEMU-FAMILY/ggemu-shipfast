@@ -7,10 +7,6 @@ body {
   margin: 0;
 }
 
-a {
-  color: currentColor;
-}
-
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
