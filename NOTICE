@@ -1,5 +1,13 @@
-GGEMU-SHIPFAST
+GGEMU ShipFast
 Copyright 2026 ezshine
 
-This product includes source code from GGEMU-SHIPFAST:
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file for the full license text.
+
+Source repository:
 https://github.com/GGEMU-FAMILY/ggemu-shipfast
+
+This product includes source code, documentation, and configuration files from
+GGEMU ShipFast. Redistributed copies and derivative works must retain the
+copyright, license, and attribution notices required by the Apache License,
+Version 2.0.
