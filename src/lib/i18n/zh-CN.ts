@@ -61,6 +61,7 @@ export const zhCnMessages = {
     home: '游戏库',
     play: '开始游戏',
     overview: '游戏简介',
+    keywords: '关键词',
     howToPlay: '玩法指南',
     details: '游戏信息',
     platform: '平台',

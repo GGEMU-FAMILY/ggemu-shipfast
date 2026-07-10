@@ -66,6 +66,7 @@ export const enMessages = {
     home: 'Games',
     play: 'Play Now',
     overview: 'Overview',
+    keywords: 'Keywords',
     howToPlay: 'How to Play',
     details: 'Game Details',
     platform: 'Platform',

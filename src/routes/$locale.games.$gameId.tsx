@@ -233,120 +233,122 @@ function LocalizedGameDetailPage() {
 
   return (
     <SiteLayout locale={lang}>
-      <section className="bg-base-100">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="breadcrumbs text-sm">
-            <ul>
-              <li>
-                <Link params={{ locale: lang }} search={{}} to="/$locale">
-                  {t.home}
-                </Link>
-              </li>
-              <li>{game.name}</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-base-100">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(320px,440px)_1fr] lg:px-8">
-          <div className="aspect-[4/3] self-start overflow-hidden rounded-box border border-base-300 bg-base-200 shadow-sm">
-            {game.game_cover ? (
-              <img
-                alt={game.name ?? 'Game cover'}
-                className="h-full w-full object-cover"
-                src={game.game_cover}
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center bg-base-300 text-base-content/40">
-                Retro
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-col justify-center gap-6">
-            <div>
-              <div className="mb-3 flex flex-wrap gap-2">
-                <span className="badge badge-success badge-outline gap-1">
-                  <i className="ri-global-line" />
-                  {t.browserReady}
-                </span>
-                <span className="badge badge-primary badge-outline gap-1">
-                  <i className="ri-download-cloud-2-line" />
-                  {t.noDownload}
-                </span>
-                {game.platform ? (
-                  <span className="badge badge-primary gap-1">
-                    <i className="ri-gamepad-line" />
-                    {game.platform}
-                  </span>
-                ) : null}
-              </div>
-              <h1 className="line-clamp-2 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl">
-                {game.name}
-              </h1>
-              {game.description ? (
-                <p className="mt-4 max-w-3xl text-base leading-7 text-base-content/70 sm:text-lg">
-                  {game.description}
-                </p>
-              ) : null}
+      <div className="bg-base-100">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+          <section>
+            <div className="breadcrumbs text-sm">
+              <ul className="min-w-0">
+                <li>
+                  <Link params={{ locale: lang }} search={{}} to="/$locale">
+                    {t.home}
+                  </Link>
+                </li>
+                <li className="min-w-0">
+                  <span className="block max-w-[min(70vw,32rem)] truncate">{game.name}</span>
+                </li>
+              </ul>
             </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <a
-                className="btn btn-primary btn-lg px-8 text-primary-content hover:text-primary-content"
-                href={`/${lang}/games/${gameId}/play`}
-                onClick={() => saveRecentPlayedGame(game, gameId)}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <i className="ri-play-fill text-xl" />
-                {t.play}
-              </a>
-            </div>
-
-            <div className="grid grid-cols-3 gap-6 text-left sm:max-w-md">
-              <Stat label={t.plays} value={game.plays_count ?? 0} />
-              <Stat label={t.views} value={game.views_count ?? 0} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_340px] lg:px-8">
-        <div className="flex flex-col gap-6">
-          <ContentPanel title={t.overview} value={game.description} />
-          <ContentPanel title={t.howToPlay} value={game.how_to_play} />
-          <FaqSection items={faqItems} title={t.faq} />
-          <Await promise={relatedGamesPromise} fallback={<RelatedGamesFallback title={t.relatedGames} />}>
-            {(related) => (
-              <RelatedGameSection
-                games={getRelatedGames(
-                  related.relatedByCategory,
-                  related.relatedByDeveloper,
-                )}
-                lang={lang}
-                title={t.relatedGames}
-              />
-            )}
-          </Await>
-        </div>
-
-        <aside className="flex flex-col gap-4">
-          <section className="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
-            <h2 className="text-lg font-semibold">{t.details}</h2>
-            <dl className="mt-4 grid gap-3 text-sm">
-              <Fact icon="ri-gamepad-line" label={t.platform} value={game.platform} />
-              <Fact icon="ri-building-2-line" label={t.developer} value={game.developer} />
-              <Fact icon="ri-calendar-line" label={t.released} value={game.released_year} />
-              <Fact icon="ri-user-line" label={t.players} value={String(game.players ?? 1)} />
-            </dl>
           </section>
 
-          <TagSection emptyText={t.noData} items={categories} title={t.categories} />
-          <TagSection emptyText={t.noData} items={languages} title={t.languages} />
-        </aside>
-      </section>
+          <section className="grid gap-4 lg:grid-cols-[minmax(320px,440px)_1fr] lg:gap-8">
+            <div className="aspect-[4/3] w-full self-start overflow-hidden rounded-box border border-base-300 bg-base-200 shadow-sm">
+              {game.game_cover ? (
+                <img
+                  alt={game.name ?? 'Game cover'}
+                  className="h-full w-full object-cover"
+                  src={game.game_cover}
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-base-300 text-base-content/40">
+                  Retro
+                </div>
+              )}
+            </div>
+
+            <div className="flex min-w-0 flex-col justify-center gap-3 sm:gap-6 lg:self-center">
+              <div>
+                <div className="mb-2 flex flex-wrap gap-2 sm:mb-3">
+                  <span className="badge badge-sm badge-success badge-outline gap-1 sm:badge-md">
+                    <i className="ri-global-line" />
+                    {t.browserReady}
+                  </span>
+                  <span className="badge badge-sm badge-primary badge-outline gap-1 sm:badge-md">
+                    <i className="ri-download-cloud-2-line" />
+                    {t.noDownload}
+                  </span>
+                  {game.platform ? (
+                    <span className="badge badge-sm badge-primary max-w-full gap-1 sm:badge-md">
+                      <i className="ri-gamepad-line" />
+                      <span className="truncate">{game.platform}</span>
+                    </span>
+                  ) : null}
+                </div>
+                <h1 className="max-w-4xl truncate text-2xl font-semibold leading-tight sm:text-4xl">
+                  {game.name}
+                </h1>
+                {game.description ? (
+                  <p className="mt-2 line-clamp-2 max-w-3xl text-sm leading-6 text-base-content/70 sm:mt-4 sm:line-clamp-none sm:text-lg sm:leading-7">
+                    {game.description}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <a
+                  className="btn btn-primary btn-lg px-8 text-primary-content hover:text-primary-content"
+                  href={`/${lang}/games/${gameId}/play`}
+                  onClick={() => saveRecentPlayedGame(game, gameId)}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <i className="ri-play-fill text-xl" />
+                  {t.play}
+                </a>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-left sm:max-w-md sm:gap-6">
+                <Stat label={t.plays} value={game.plays_count ?? 0} />
+                <Stat label={t.views} value={game.views_count ?? 0} />
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-6 lg:grid-cols-[1fr_340px]">
+            <div className="flex flex-col gap-6">
+              <KeywordPanel title={t.keywords} value={game.keywords} />
+              <ContentPanel title={t.howToPlay} value={game.how_to_play} />
+              <FaqSection items={faqItems} title={t.faq} />
+              <Await promise={relatedGamesPromise} fallback={<RelatedGamesFallback title={t.relatedGames} />}>
+                {(related) => (
+                  <RelatedGameSection
+                    games={getRelatedGames(
+                      related.relatedByCategory,
+                      related.relatedByDeveloper,
+                    )}
+                    lang={lang}
+                    title={t.relatedGames}
+                  />
+                )}
+              </Await>
+            </div>
+
+            <aside className="flex flex-col gap-4">
+              <section className="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h2 className="text-lg font-semibold">{t.details}</h2>
+                <dl className="mt-4 grid gap-3 text-sm">
+                  <Fact icon="ri-gamepad-line" label={t.platform} value={game.platform} />
+                  <Fact icon="ri-building-2-line" label={t.developer} value={game.developer} />
+                  <Fact icon="ri-calendar-line" label={t.released} value={game.released_year} />
+                  <Fact icon="ri-user-line" label={t.players} value={String(game.players ?? 1)} />
+                </dl>
+              </section>
+
+              <TagSection emptyText={t.noData} items={categories} title={t.categories} />
+              <TagSection emptyText={t.noData} items={languages} title={t.languages} />
+            </aside>
+          </section>
+        </div>
+      </div>
     </SiteLayout>
   )
 }
@@ -379,6 +381,39 @@ function ContentPanel({ title, value }: { title: string; value?: string }) {
       </h2>
       <p className="mt-4 whitespace-pre-line leading-7 text-base-content/75">{value}</p>
     </section>
+  )
+}
+
+function KeywordPanel({ title, value }: { title: string; value?: string }) {
+  const keywords = getKeywordItems(value)
+
+  if (keywords.length === 0) {
+    return null
+  }
+
+  return (
+    <section className="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+      <h2 className="flex items-center gap-2 text-xl font-semibold">
+        <i className="ri-price-tag-3-line text-primary" />
+        {title}
+      </h2>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {keywords.map((keyword) => (
+          <span className="badge badge-outline" key={keyword}>
+            {keyword}
+          </span>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function getKeywordItems(value?: string) {
+  return (
+    value
+      ?.split(/[,，;；]/)
+      .map((keyword) => keyword.trim())
+      .filter(Boolean) ?? []
   )
 }
 

@@ -62,6 +62,7 @@ export const jaMessages = {
     home: 'ゲーム',
     play: '今すぐプレイ',
     overview: '概要',
+    keywords: 'キーワード',
     howToPlay: '遊び方',
     details: 'ゲーム情報',
     platform: '機種',

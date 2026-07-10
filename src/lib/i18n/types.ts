@@ -50,6 +50,7 @@ export type I18nMessages = {
     home: string
     play: string
     overview: string
+    keywords: string
     howToPlay: string
     details: string
     platform: string
