@@ -10,6 +10,10 @@ const pspCrossOriginIsolationHeaders = {
   'Permissions-Policy': 'cross-origin-isolated=(self "https://ggemu.com")',
 } as const
 
+const noindexHeaders = {
+  'X-Robots-Tag': 'noindex, nofollow',
+} as const
+
 export const Route = createFileRoute('/$locale/games/$gameId/play')({
   beforeLoad: ({ location, params }) => {
     if (!location.searchStr) {
@@ -23,8 +27,10 @@ export const Route = createFileRoute('/$locale/games/$gameId/play')({
     })
   },
   loader: ({ params }) => getGameDetail({ data: { id: params.gameId } }),
-  headers: ({ loaderData }) =>
-    loaderData && isPspGame(loaderData) ? pspCrossOriginIsolationHeaders : undefined,
+  headers: ({ loaderData }) => ({
+    ...noindexHeaders,
+    ...(loaderData && isPspGame(loaderData) ? pspCrossOriginIsolationHeaders : {}),
+  }),
   component: LocalizedPlayGamePage,
 })
 
