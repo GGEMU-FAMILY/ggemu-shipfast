@@ -4,8 +4,15 @@ import { SiteLayout } from '#/components/site-layout'
 import { normalizeLocale } from '#/lib/i18n'
 import { getLocalizedSeoLinks, getSeoOrigin } from '#/lib/seo'
 
+const crossOriginIsolationHeaders = {
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Embedder-Policy': 'require-corp',
+  'Permissions-Policy': 'cross-origin-isolated=(self "https://ggemu.com")',
+} as const
+
 export const Route = createFileRoute('/$locale/play-my-rom')({
   loader: () => getSeoOrigin(),
+  headers: () => crossOriginIsolationHeaders,
   head: ({ loaderData, params }) => ({
     links: loaderData
       ? getLocalizedSeoLinks({
@@ -34,7 +41,8 @@ function PlayMyRomPage() {
     <SiteLayout locale={lang}>
       <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <iframe
-          allow="fullscreen; gamepad; autoplay"
+          allow="fullscreen; gamepad; autoplay; cross-origin-isolated"
+          allowFullScreen
           className="min-h-[720px] flex-1 rounded-lg border border-base-300 bg-base-100"
           src={iframeSrc}
           title="Play My ROM"
