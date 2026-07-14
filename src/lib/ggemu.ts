@@ -34,6 +34,7 @@ export type PublicGame = {
   languages?: Array<string>
   players?: number
   play_online?: number
+  play_device?: number
   downloadable?: number
   is_gcoin_game?: number
   game_cover?: string
@@ -59,6 +60,7 @@ export type GameSearchResult = {
 export type FilterOption = {
   name: string
   slug?: string
+  href?: string
   count?: number
 }
 
@@ -115,6 +117,10 @@ type GameDetailPayload = {
   locale?: Locale
 }
 
+type RandomGamePayload = {
+  platform?: string
+}
+
 type RelatedGamesPayload = {
   category?: string
   currentId: string
@@ -148,6 +154,8 @@ type GameDetailResponse = {
   success: true
   data: PublicGame
 }
+
+type RandomGame = Pick<PublicGame, '_id' | 'url_slug'>
 
 type BlogPostSearchResponse = {
   success: true
@@ -287,6 +295,106 @@ function normalizeFilterOptions(options: Array<FilterOption>) {
   })
 }
 
+function normalizePlatformKey(value: string | undefined) {
+  return value?.trim().toLowerCase() ?? ''
+}
+
+function getHrefLastSegment(href: string | undefined) {
+  const cleaned = href?.trim().split(/[?#]/)[0]?.replace(/\/+$/, '')
+
+  return cleaned?.split('/').pop()
+}
+
+function resolvePlatformName(value: string, platforms: Array<FilterOption>) {
+  const key = normalizePlatformKey(value)
+  const matched = platforms.find((platform) => {
+    return [
+      platform.name,
+      platform.slug,
+      getHrefLastSegment(platform.href),
+    ].some((candidate) => normalizePlatformKey(candidate) === key)
+  })
+
+  return matched?.name?.trim() || value
+}
+
+function parseRandomPlatforms(value: string | undefined, platforms: Array<FilterOption>) {
+  const seen = new Set<string>()
+  const resolved = value
+    ?.split(',')
+    .map((platform) => platform.trim())
+    .filter(Boolean)
+    .map((platform) => resolvePlatformName(platform, platforms)) ?? []
+
+  return resolved.filter((platform) => {
+    const key = normalizePlatformKey(platform)
+
+    if (!key || seen.has(key)) {
+      return false
+    }
+
+    seen.add(key)
+    return true
+  })
+}
+
+function pickRandomItem<T>(items: Array<T>) {
+  return items[Math.floor(Math.random() * items.length)]
+}
+
+function pickRandomPlatform(value: string | undefined, platforms: Array<FilterOption>) {
+  const resolvedPlatforms = parseRandomPlatforms(value, platforms)
+
+  return resolvedPlatforms.length > 0 ? pickRandomItem(resolvedPlatforms) : undefined
+}
+
+function isOnlinePlayableGame(game: PublicGame) {
+  return game.play_online === 1 && (game.play_device === 0 || game.play_device === 2)
+}
+
+function toRandomGame(game: PublicGame): RandomGame {
+  return {
+    _id: game._id,
+    url_slug: game.url_slug,
+  }
+}
+
+async function fetchRandomPlayableGame(platform: string | undefined) {
+  const randomPageSize = 20
+  const baseParams = new URLSearchParams({
+    limit: '1',
+    page: '1',
+    play_online: '1',
+  })
+
+  addOptionalParam(baseParams, 'platform', platform)
+
+  const firstPage = await fetchGames(baseParams)
+  const total = firstPage.pagination.total
+
+  if (total <= 0) {
+    return null
+  }
+
+  for (let attempt = 0; attempt < Math.min(total, 8); attempt += 1) {
+    const params = new URLSearchParams(baseParams)
+    params.set('limit', String(randomPageSize))
+    params.set(
+      'page',
+      String(Math.floor(Math.random() * Math.ceil(total / randomPageSize)) + 1),
+    )
+
+    const result = await fetchGames(params)
+    const playableGames = result.games.filter(isOnlinePlayableGame)
+
+    if (playableGames.length > 0) {
+      return toRandomGame(pickRandomItem(playableGames))
+    }
+  }
+
+  return null
+}
+
 async function fetchRelatedGames({
   category,
   currentId,
@@ -377,6 +485,23 @@ export const getGameFilterOptions = createServerFn({ method: 'GET' })
       platforms: normalizeFilterOptions(platformsResult.data),
       categories: normalizeFilterOptions(genresResult.data),
     } satisfies GameFilterOptions
+  })
+
+export const getRandomPlayableGame = createServerFn({ method: 'GET' })
+  .validator((payload: RandomGamePayload) => ({
+    platform: payload.platform?.trim(),
+  }))
+  .handler(async ({ data }) => {
+    const platformsResult = await fetchJson<FilterOptionResponse>(
+      '/api/games/platforms',
+      new URLSearchParams(),
+    )
+    const platform = pickRandomPlatform(
+      data.platform,
+      normalizeFilterOptions(platformsResult.data),
+    )
+
+    return fetchRandomPlayableGame(platform)
   })
 
 export const getGameDetail = createServerFn({ method: 'GET' })

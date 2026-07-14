@@ -12,11 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as XRouteImport } from './routes/x'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as RandomRouteImport } from './routes/random'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as LocaleRouteImport } from './routes/$locale'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesGameIdRouteImport } from './routes/games/$gameId'
 import { Route as LocaleTermsOfServiceRouteImport } from './routes/$locale.terms-of-service'
+import { Route as LocaleRandomRouteImport } from './routes/$locale.random'
 import { Route as LocalePrivacyPolicyRouteImport } from './routes/$locale.privacy-policy'
 import { Route as LocalePlayMyRomRouteImport } from './routes/$locale.play-my-rom'
 import { Route as LocaleBlogRouteImport } from './routes/$locale.blog'
@@ -43,6 +45,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RandomRoute = RandomRouteImport.update({
+  id: '/random',
+  path: '/random',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
   id: '/manifest.webmanifest',
   path: '/manifest.webmanifest',
@@ -66,6 +73,11 @@ const GamesGameIdRoute = GamesGameIdRouteImport.update({
 const LocaleTermsOfServiceRoute = LocaleTermsOfServiceRouteImport.update({
   id: '/terms-of-service',
   path: '/terms-of-service',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocaleRandomRoute = LocaleRandomRouteImport.update({
+  id: '/random',
+  path: '/random',
   getParentRoute: () => LocaleRoute,
 } as any)
 const LocalePrivacyPolicyRoute = LocalePrivacyPolicyRouteImport.update({
@@ -123,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$locale': typeof LocaleRouteWithChildren
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/random': typeof RandomRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
@@ -130,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/$locale/blog': typeof LocaleBlogRouteWithChildren
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
+  '/$locale/random': typeof LocaleRandomRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
@@ -143,6 +157,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$locale': typeof LocaleRouteWithChildren
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/random': typeof RandomRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
@@ -150,6 +165,7 @@ export interface FileRoutesByTo {
   '/$locale/blog': typeof LocaleBlogRouteWithChildren
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
+  '/$locale/random': typeof LocaleRandomRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
@@ -164,6 +180,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$locale': typeof LocaleRouteWithChildren
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/random': typeof RandomRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/x': typeof XRoute
@@ -171,6 +188,7 @@ export interface FileRoutesById {
   '/$locale/blog': typeof LocaleBlogRouteWithChildren
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
+  '/$locale/random': typeof LocaleRandomRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
@@ -186,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$locale'
     | '/manifest.webmanifest'
+    | '/random'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/x'
@@ -193,6 +212,7 @@ export interface FileRouteTypes {
     | '/$locale/blog'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
+    | '/$locale/random'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
     | '/$locale/blog/$blogId'
@@ -206,6 +226,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$locale'
     | '/manifest.webmanifest'
+    | '/random'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/x'
@@ -213,6 +234,7 @@ export interface FileRouteTypes {
     | '/$locale/blog'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
+    | '/$locale/random'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
     | '/$locale/blog/$blogId'
@@ -226,6 +248,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$locale'
     | '/manifest.webmanifest'
+    | '/random'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/x'
@@ -233,6 +256,7 @@ export interface FileRouteTypes {
     | '/$locale/blog'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
+    | '/$locale/random'
     | '/$locale/terms-of-service'
     | '/games/$gameId'
     | '/$locale/blog/$blogId'
@@ -247,6 +271,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LocaleRoute: typeof LocaleRouteWithChildren
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  RandomRoute: typeof RandomRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   XRoute: typeof XRoute
@@ -276,6 +301,13 @@ declare module '@tanstack/react-router' {
       path: '/robots.txt'
       fullPath: '/robots.txt'
       preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/random': {
+      id: '/random'
+      path: '/random'
+      fullPath: '/random'
+      preLoaderRoute: typeof RandomRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/manifest.webmanifest': {
@@ -311,6 +343,13 @@ declare module '@tanstack/react-router' {
       path: '/terms-of-service'
       fullPath: '/$locale/terms-of-service'
       preLoaderRoute: typeof LocaleTermsOfServiceRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/random': {
+      id: '/$locale/random'
+      path: '/random'
+      fullPath: '/$locale/random'
+      preLoaderRoute: typeof LocaleRandomRouteImport
       parentRoute: typeof LocaleRoute
     }
     '/$locale/privacy-policy': {
@@ -414,6 +453,7 @@ interface LocaleRouteChildren {
   LocaleBlogRoute: typeof LocaleBlogRouteWithChildren
   LocalePlayMyRomRoute: typeof LocalePlayMyRomRoute
   LocalePrivacyPolicyRoute: typeof LocalePrivacyPolicyRoute
+  LocaleRandomRoute: typeof LocaleRandomRoute
   LocaleTermsOfServiceRoute: typeof LocaleTermsOfServiceRoute
   LocaleGamesGameIdRoute: typeof LocaleGamesGameIdRouteWithChildren
 }
@@ -423,6 +463,7 @@ const LocaleRouteChildren: LocaleRouteChildren = {
   LocaleBlogRoute: LocaleBlogRouteWithChildren,
   LocalePlayMyRomRoute: LocalePlayMyRomRoute,
   LocalePrivacyPolicyRoute: LocalePrivacyPolicyRoute,
+  LocaleRandomRoute: LocaleRandomRoute,
   LocaleTermsOfServiceRoute: LocaleTermsOfServiceRoute,
   LocaleGamesGameIdRoute: LocaleGamesGameIdRouteWithChildren,
 }
@@ -446,6 +487,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LocaleRoute: LocaleRouteWithChildren,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  RandomRoute: RandomRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   XRoute: XRoute,
