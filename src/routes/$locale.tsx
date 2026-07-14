@@ -20,6 +20,7 @@ import {
   PokiLikeHomeTemplate,
   getPokiDailyLayoutSeed,
 } from '#/components/home/poki-like-template'
+import { SidenavHomeTemplate } from '#/components/home/sidenav-template'
 import { HOME_BLOG_POST_LIMIT } from '#/components/home/shared'
 import type { Filters, HomeLoaderData } from '#/components/home/types'
 import { TwoColumnHomeTemplate } from '#/components/home/two-column-template'
@@ -301,6 +302,10 @@ function LocalizedHomePage() {
 
   if (isFeatures) {
     return <FeaturesHomeTemplate {...templateProps} />
+  }
+
+  if (currentTemplate === 'sidenav') {
+    return <SidenavHomeTemplate {...templateProps} />
   }
 
   if (currentTemplate === 'two-column') {

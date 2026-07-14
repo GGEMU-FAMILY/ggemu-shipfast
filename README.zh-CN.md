@@ -365,6 +365,8 @@ ShipFast 面向 Cloudflare Workers 设计。
 - `default`
 - `two-column`
 - `poki-like`
+- `features`
+- `sidenav`
 
 在 Cloudflare Workers 上，请将这些配置为 Worker 变量或密钥。
 

@@ -1,7 +1,12 @@
 import rawSiteConfig from '../../siteconfig.js'
 import { env as cloudflareEnv } from 'cloudflare:workers'
 
-export type SiteTemplate = 'default' | 'two-column' | 'poki-like' | 'features'
+export type SiteTemplate =
+  | 'default'
+  | 'two-column'
+  | 'poki-like'
+  | 'features'
+  | 'sidenav'
 
 type SiteConfig = typeof rawSiteConfig
 type SiteConfigKey = keyof SiteConfig
@@ -22,6 +27,7 @@ export const siteTemplates = [
   'two-column',
   'poki-like',
   'features',
+  'sidenav',
 ] as const satisfies ReadonlyArray<SiteTemplate>
 
 const siteTemplateSet = new Set<SiteTemplate>(siteTemplates)

@@ -83,11 +83,11 @@ export function HomeSearchOverlay({
   return (
     <>
       <div
-        className={`fixed inset-0 z-40 bg-black/20 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        className={`fixed inset-0 z-[110] bg-black/20 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
         onClick={onClose}
       />
       <aside
-        className={`fixed bottom-0 left-0 top-0 z-50 flex w-[min(28rem,calc(100vw-1.5rem))] flex-col bg-base-100 shadow-2xl transition-transform duration-200 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed bottom-0 left-0 top-0 z-[120] flex w-[min(28rem,calc(100vw-1.5rem))] flex-col bg-base-100 shadow-2xl transition-transform duration-200 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <header className="flex items-center justify-between border-b border-base-300 px-4 py-3">
           <h2 className="text-base font-semibold">{t.search}</h2>

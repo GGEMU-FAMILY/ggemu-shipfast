@@ -365,6 +365,8 @@ Runtime environment variables with the same names take priority over `siteconfig
 - `default`
 - `two-column`
 - `poki-like`
+- `features`
+- `sidenav`
 
 On Cloudflare Workers, configure these as Worker variables or secrets.
 
