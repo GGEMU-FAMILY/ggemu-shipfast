@@ -11,6 +11,8 @@ import { useEffect, useState } from 'react'
 import { DefaultHomeTemplate } from '#/components/home/default-template'
 import {
   FEATURE_NEW_ARRIVAL_LIMIT,
+  FEATURE_PLATFORM_LIMIT,
+  FEATURE_PLATFORMS,
   FEATURE_SECTION_LIMIT,
   FeaturesHomeTemplate,
   getFeatureSections,
@@ -109,17 +111,13 @@ export const Route = createFileRoute('/$locale')({
       const [
         seoOrigin,
         newArrival,
-        topPlays,
-        topLikes,
-        topViews,
+        platformResults,
         filterOptions,
         latestBlogPosts,
       ] = await Promise.all([
         getSeoOrigin(),
         loadFeatureGames(locale, 'newest', FEATURE_NEW_ARRIVAL_LIMIT),
-        loadFeatureGames(locale, 'popular'),
-        loadFeatureGames(locale, 'likes'),
-        loadFeatureGames(locale, 'views'),
+        loadFeaturePlatformGames(locale),
         loadGameFilterOptions(),
         loadLatestBlogPosts(),
       ])
@@ -128,9 +126,7 @@ export const Route = createFileRoute('/$locale')({
         ...newArrival,
         featureSections: getFeatureSections({
           newArrival: newArrival.games,
-          topLikes: topLikes.games,
-          topPlays: topPlays.games,
-          topViews: topViews.games,
+          platformGames: platformResults,
         }),
         filterOptions,
         layoutSeed: getPokiDailyLayoutSeed(),
@@ -360,13 +356,33 @@ async function loadFeatureGames(
   locale: Locale,
   sort: GameSearchSort,
   limit = FEATURE_SECTION_LIMIT,
+  platform = '',
 ) {
   return searchGames({
     data: {
       limit,
       locale,
       page: 1,
+      platform,
       sort,
     },
   })
+}
+
+async function loadFeaturePlatformGames(locale: Locale) {
+  return Promise.all(
+    FEATURE_PLATFORMS.map(async (platform) => {
+      const result = await loadFeatureGames(
+        locale,
+        'popular',
+        FEATURE_PLATFORM_LIMIT,
+        platform,
+      )
+
+      return {
+        title: platform,
+        games: result.games,
+      }
+    }),
+  )
 }

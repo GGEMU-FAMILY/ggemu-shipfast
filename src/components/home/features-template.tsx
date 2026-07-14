@@ -7,9 +7,17 @@ import type { Locale, PublicGame } from '#/lib/ggemu'
 import { HomeFaqSection, HomeLatestBlogPostsSection } from './shared'
 import { RecentPlayedGamesSection } from './recent-played-games'
 import { HomeSearchOverlay } from './search-overlay'
-import type { FeatureSection, HomeTemplateProps } from './types'
+import type { FeaturePlatformGames, FeatureSection, HomeTemplateProps } from './types'
 
 export const FEATURE_NEW_ARRIVAL_LIMIT = 7
+export const FEATURE_PLATFORM_LIMIT = 8
+export const FEATURE_PLATFORMS = [
+  'Arcade',
+  'FLASH',
+  'HTML5',
+  'Famicom',
+  'Game Boy Advance',
+] as const
 export const FEATURE_SECTION_LIMIT = 10
 
 export function FeaturesHomeTemplate({
@@ -50,6 +58,7 @@ export function FeaturesHomeTemplate({
             <FeatureGamesSection
               games={section.games}
               hasHeroCard={section.hasHeroCard}
+              isSingleRow={section.isSingleRow}
               key={section.title}
               lang={lang}
               title={section.title}
@@ -73,14 +82,10 @@ export function FeaturesHomeTemplate({
 
 export function getFeatureSections({
   newArrival,
-  topLikes = newArrival,
-  topPlays = newArrival,
-  topViews = newArrival,
+  platformGames = [],
 }: {
   newArrival: Array<PublicGame>
-  topLikes?: Array<PublicGame>
-  topPlays?: Array<PublicGame>
-  topViews?: Array<PublicGame>
+  platformGames?: Array<FeaturePlatformGames>
 }): Array<FeatureSection> {
   return [
     {
@@ -88,32 +93,25 @@ export function getFeatureSections({
       games: newArrival.slice(0, FEATURE_NEW_ARRIVAL_LIMIT),
       hasHeroCard: true,
     },
-    {
-      title: 'Top Plays',
-      games: sortFeatureGames(topPlays, 'plays_count'),
+    ...platformGames.map((platform) => ({
+      title: platform.title,
+      games: platform.games.slice(0, FEATURE_PLATFORM_LIMIT),
       hasHeroCard: false,
-    },
-    {
-      title: 'Top Likes',
-      games: sortFeatureGames(topLikes, 'likes_count'),
-      hasHeroCard: false,
-    },
-    {
-      title: 'Top Views',
-      games: sortFeatureGames(topViews, 'views_count'),
-      hasHeroCard: false,
-    },
+      isSingleRow: true,
+    })),
   ]
 }
 
 function FeatureGamesSection({
   games,
   hasHeroCard,
+  isSingleRow = false,
   lang,
   title,
 }: {
   games: Array<PublicGame>
   hasHeroCard: boolean
+  isSingleRow?: boolean
   lang: Locale
   title: string
 }) {
@@ -124,7 +122,7 @@ function FeatureGamesSection({
   return (
     <section className="min-w-0">
       <div className="mb-2 flex items-center gap-3">
-        <h2 className="text-[22px] font-black leading-none tracking-normal sm:text-2xl">
+        <h2 className="text-xl font-semibold leading-none text-base-content">
           {title}
         </h2>
       </div>
@@ -132,7 +130,12 @@ function FeatureGamesSection({
       {hasHeroCard ? (
         <FeatureHeroGamesRow games={games} lang={lang} title={title} />
       ) : (
-        <FeatureSmallGamesRow games={games} lang={lang} title={title} />
+        <FeatureSmallGamesRow
+          games={games}
+          isSingleRow={isSingleRow}
+          lang={lang}
+          title={title}
+        />
       )}
     </section>
   )
@@ -186,13 +189,30 @@ function FeatureHeroGamesRow({
 
 function FeatureSmallGamesRow({
   games,
+  isSingleRow,
   lang,
   title,
 }: {
   games: Array<PublicGame>
+  isSingleRow: boolean
   lang: Locale
   title: string
 }) {
+  if (isSingleRow) {
+    return (
+      <div className="flex flex-nowrap gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {games.map((game, index) => (
+          <FeatureGameCard
+            game={game}
+            isHeroCard={false}
+            key={`${title}-${game._id ?? game.url_slug ?? game.name ?? index}`}
+            lang={lang}
+          />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-flow-col grid-rows-2 gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {games.map((game, index) => (
@@ -218,10 +238,11 @@ function FeatureGameCard({
 }) {
   const gameId = game.url_slug || game._id || ''
   const gameName = game.name?.trim() || 'Game'
+  const keywords = game.keywords?.trim()
 
   return (
     <Link
-      className={`group relative aspect-[4/3] shrink-0 overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm transition duration-200 hover:z-10 hover:scale-[1.02] hover:border-primary/40 hover:shadow-lg ${isHeroCard ? 'w-[320px] sm:w-[520px]' : 'w-[154px] sm:w-[248px]'}`}
+      className={`group relative aspect-[4/3] shrink-0 overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm transition duration-200 hover:z-10 hover:border-primary/40 hover:shadow-lg ${isHeroCard ? 'w-[320px] sm:w-[520px]' : 'w-[154px] sm:w-[248px]'}`}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
@@ -242,6 +263,11 @@ function FeatureGameCard({
       <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
       <span className="absolute inset-x-0 bottom-0 px-3 pb-3 pt-10 text-sm font-black leading-tight text-white">
         <span className="line-clamp-2">{gameName}</span>
+        {keywords ? (
+          <span className="mt-1 line-clamp-2 max-h-0 text-xs font-medium leading-snug text-white/80 opacity-0 transition-all duration-200 group-hover:max-h-[2.75em] group-hover:opacity-100">
+            {keywords}
+          </span>
+        ) : null}
       </span>
     </Link>
   )

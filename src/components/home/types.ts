@@ -22,6 +22,12 @@ export type Filters = {
 export type FeatureSection = {
   games: Array<PublicGame>
   hasHeroCard: boolean
+  isSingleRow?: boolean
+  title: string
+}
+
+export type FeaturePlatformGames = {
+  games: Array<PublicGame>
   title: string
 }
 
