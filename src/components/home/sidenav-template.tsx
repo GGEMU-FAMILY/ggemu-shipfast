@@ -26,7 +26,7 @@ export function SidenavHomeTemplate(props: HomeTemplateProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   return (
-    <main className="relative isolate min-h-screen bg-base-200 text-base-content lg:grid lg:grid-cols-[18rem_minmax(0,1fr)]">
+    <main className="relative isolate min-h-screen bg-base-200 text-base-content lg:grid lg:grid-cols-[240px_minmax(0,1fr)]">
       <HomeSidenav locale={lang} onOpenSearch={() => setIsSearchOpen(true)} />
 
       <div className="relative z-0 min-w-0 bg-base-100">
@@ -67,6 +67,10 @@ function HomeSidenav({
   const themeMenuRef = useRef<HTMLDetailsElement>(null)
   const localeMenuRef = useRef<HTMLDetailsElement>(null)
   const canSwitchTheme = siteThemes.length > 1
+  const controlsGridClassName = canSwitchTheme ? 'grid-cols-2' : 'grid-cols-1'
+  const controlsMenuWidthClassName = canSwitchTheme
+    ? 'w-[calc(200%+0.5rem)]'
+    : 'w-full'
 
   useEffect(() => {
     const storedTheme = normalizeSiteTheme(
@@ -120,14 +124,14 @@ function HomeSidenav({
 
   return (
     <aside className="relative z-[90] border-b border-base-300 bg-base-200 lg:sticky lg:top-0 lg:h-screen lg:overflow-visible lg:border-b-0 lg:border-r">
-      <div className="flex min-h-full flex-col gap-5 p-4">
+      <div className="flex min-h-full flex-col gap-4 p-3">
         <Link
-          className="flex items-center gap-3 rounded-lg p-2 transition hover:bg-base-300/70"
+          className="flex items-center gap-2 rounded-lg p-2 transition hover:bg-base-300/70"
           params={{ locale }}
           search={{}}
           to="/$locale"
         >
-          <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-lg bg-base-100">
+          <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-base-100">
             <img
               alt={siteConfig.SITE_NAME}
               className="h-full w-full object-contain"
@@ -135,7 +139,7 @@ function HomeSidenav({
             />
           </span>
           <span className="min-w-0 leading-tight">
-            <span className="block truncate text-lg font-semibold">
+            <span className="block truncate text-sm font-semibold">
               {siteConfig.SITE_NAME}
             </span>
             <span className="block truncate text-xs text-base-content/55">
@@ -146,7 +150,7 @@ function HomeSidenav({
 
         <nav className="grid gap-1">
           <button
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition hover:bg-base-300/70"
+            className="flex items-center gap-2 rounded-lg px-2 py-2 text-left text-sm font-medium transition hover:bg-base-300/70"
             onClick={() => {
               onOpenSearch()
               setIsThemeMenuOpen(false)
@@ -184,7 +188,7 @@ function HomeSidenav({
           />
         </nav>
 
-        <div className="mt-auto grid gap-2">
+        <div className={`mt-auto grid gap-2 ${controlsGridClassName}`}>
           {canSwitchTheme ? (
             <details
               className="relative z-[70]"
@@ -193,7 +197,7 @@ function HomeSidenav({
               ref={themeMenuRef}
             >
               <summary
-                className="btn btn-ghost w-full list-none justify-start border border-base-300 bg-base-100"
+                className="btn btn-ghost btn-sm w-full list-none justify-center border border-base-300 bg-base-100 px-2"
                 onClick={(event) => {
                   event.preventDefault()
                   setIsThemeMenuOpen((isOpen) => !isOpen)
@@ -201,9 +205,11 @@ function HomeSidenav({
                 }}
               >
                 <i className="ri-palette-line" />
-                {layoutCopy.theme}
+                <span className="truncate">{layoutCopy.theme}</span>
               </summary>
-              <ul className="menu absolute bottom-full left-0 z-[80] mb-2 max-h-[min(24rem,calc(100vh-8rem))] w-full overflow-y-auto rounded-box border border-base-300 bg-base-100 p-2 shadow-xl">
+              <ul
+                className={`menu absolute bottom-full left-0 z-[80] mb-2 max-h-[min(24rem,calc(100vh-8rem))] ${controlsMenuWidthClassName} overflow-y-auto rounded-box border border-base-300 bg-base-100 p-2 shadow-xl`}
+              >
                 {siteThemes.map((nextTheme) => (
                   <li key={nextTheme}>
                     <button
@@ -230,7 +236,7 @@ function HomeSidenav({
             ref={localeMenuRef}
           >
             <summary
-              className="btn btn-ghost w-full list-none justify-start border border-base-300 bg-base-100"
+              className="btn btn-ghost btn-sm w-full list-none justify-center border border-base-300 bg-base-100 px-2"
               onClick={(event) => {
                 event.preventDefault()
                 setIsLocaleMenuOpen((isOpen) => !isOpen)
@@ -238,9 +244,13 @@ function HomeSidenav({
               }}
             >
               <i className="ri-global-line" />
-              {locale === 'zh-CN' ? '中文' : locale === 'en' ? 'EN' : '日本語'}
+              <span className="truncate">
+                {locale === 'zh-CN' ? '中文' : locale === 'en' ? 'EN' : '日本語'}
+              </span>
             </summary>
-            <ul className="menu absolute bottom-full left-0 z-[80] mb-2 w-full rounded-box border border-base-300 bg-base-100 p-2 shadow-xl">
+            <ul
+              className={`menu absolute bottom-full right-0 z-[80] mb-2 ${controlsMenuWidthClassName} rounded-box border border-base-300 bg-base-100 p-2 shadow-xl`}
+            >
               {localeOptions.map((option) => (
                 <li key={option.value}>
                   <button
@@ -276,7 +286,7 @@ function SidenavLink({
       activeProps={{
         className: 'bg-primary text-primary-content hover:bg-primary',
       }}
-      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-base-300/70"
+      className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition hover:bg-base-300/70"
       params={{ locale }}
       search={{}}
       to={to}
