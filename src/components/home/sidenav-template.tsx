@@ -12,6 +12,7 @@ import {
   HomeFaqSection,
   HomeLatestBlogPostsSection,
 } from './shared'
+import { RecentPlayedGamesSection } from './recent-played-games'
 import { HomeSearchOverlay } from './search-overlay'
 import type { HomeTemplateProps } from './types'
 
@@ -30,6 +31,7 @@ export function SidenavHomeTemplate(props: HomeTemplateProps) {
       <HomeSidenav locale={lang} onOpenSearch={() => setIsSearchOpen(true)} />
 
       <div className="relative z-0 min-w-0 bg-base-100">
+        <RecentPlayedGamesSection lang={lang} />
         <GamesSection
           {...props}
           gridClassName="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
