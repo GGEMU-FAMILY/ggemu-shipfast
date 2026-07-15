@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { useEffect } from 'react'
 
 import { getGameDetail } from '#/lib/ggemu'
 import { normalizeLocale } from '#/lib/i18n'
@@ -42,6 +43,21 @@ function LocalizedPlayGamePage() {
   const refcode = encodeURIComponent(siteConfig.GGEMU_REFCODE)
   const isPsp = isPspGame(game)
   const embedSrc = `https://ggemu.com/${lang}/game/${embedId}?${buildEmbedSearch(refcode, isPsp)}`
+
+  useEffect(() => {
+    return () => {
+      if (!isPsp || !window.crossOriginIsolated) {
+        return
+      }
+
+      window.setTimeout(() => {
+        const url = new URL(window.location.href)
+
+        url.searchParams.delete('isolated')
+        window.location.href = url.toString()
+      }, 0)
+    }
+  }, [isPsp])
 
   return (
     <main className="min-h-screen bg-black">
