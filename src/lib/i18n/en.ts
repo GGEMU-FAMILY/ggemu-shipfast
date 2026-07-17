@@ -65,6 +65,13 @@ export const enMessages = {
   detail: {
     home: 'Games',
     play: 'Play Now',
+    share: 'Share',
+    generatePoster: 'Generate Poster',
+    systemShare: 'System Share',
+    posterTitle: 'Share Poster',
+    downloadPoster: 'Download Poster',
+    posterScanCta: 'Scan to play instantly. No download needed.',
+    shareUnavailableCopied: 'System share is unavailable, so the link was copied.',
     overview: 'Overview',
     keywords: 'Keywords',
     howToPlay: 'How to Play',

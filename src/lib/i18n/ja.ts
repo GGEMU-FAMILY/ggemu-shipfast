@@ -61,6 +61,13 @@ export const jaMessages = {
   detail: {
     home: 'ゲーム',
     play: '今すぐプレイ',
+    share: '共有',
+    generatePoster: 'ポスターを生成',
+    systemShare: 'システム共有',
+    posterTitle: '共有ポスター',
+    downloadPoster: 'ポスターをダウンロード',
+    posterScanCta: 'スキャンしてすぐプレイ。ダウンロード不要。',
+    shareUnavailableCopied: 'システム共有を利用できないため、リンクをコピーしました。',
     overview: '概要',
     keywords: 'キーワード',
     howToPlay: '遊び方',

@@ -49,6 +49,13 @@ export type I18nMessages = {
   detail: {
     home: string
     play: string
+    share: string
+    generatePoster: string
+    systemShare: string
+    posterTitle: string
+    downloadPoster: string
+    posterScanCta: string
+    shareUnavailableCopied: string
     overview: string
     keywords: string
     howToPlay: string

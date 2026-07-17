@@ -17,6 +17,7 @@ import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]
 import { Route as LocaleRouteImport } from './routes/$locale'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesGameIdRouteImport } from './routes/games/$gameId'
+import { Route as ApiShareImageRouteImport } from './routes/api/share-image'
 import { Route as LocaleTermsOfServiceRouteImport } from './routes/$locale.terms-of-service'
 import { Route as LocaleRandomRouteImport } from './routes/$locale.random'
 import { Route as LocalePrivacyPolicyRouteImport } from './routes/$locale.privacy-policy'
@@ -68,6 +69,11 @@ const IndexRoute = IndexRouteImport.update({
 const GamesGameIdRoute = GamesGameIdRouteImport.update({
   id: '/games/$gameId',
   path: '/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiShareImageRoute = ApiShareImageRouteImport.update({
+  id: '/api/share-image',
+  path: '/api/share-image',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocaleTermsOfServiceRoute = LocaleTermsOfServiceRouteImport.update({
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/random': typeof LocaleRandomRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
+  '/api/share-image': typeof ApiShareImageRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/random': typeof LocaleRandomRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
+  '/api/share-image': typeof ApiShareImageRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
   '/$locale/random': typeof LocaleRandomRoute
   '/$locale/terms-of-service': typeof LocaleTermsOfServiceRoute
+  '/api/share-image': typeof ApiShareImageRoute
   '/games/$gameId': typeof GamesGameIdRouteWithChildren
   '/$locale/blog/$blogId': typeof LocaleBlogBlogIdRoute
   '/$locale/games/$gameId': typeof LocaleGamesGameIdRouteWithChildren
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/$locale/privacy-policy'
     | '/$locale/random'
     | '/$locale/terms-of-service'
+    | '/api/share-image'
     | '/games/$gameId'
     | '/$locale/blog/$blogId'
     | '/$locale/games/$gameId'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/$locale/privacy-policy'
     | '/$locale/random'
     | '/$locale/terms-of-service'
+    | '/api/share-image'
     | '/games/$gameId'
     | '/$locale/blog/$blogId'
     | '/$locale/games/$gameId'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/$locale/privacy-policy'
     | '/$locale/random'
     | '/$locale/terms-of-service'
+    | '/api/share-image'
     | '/games/$gameId'
     | '/$locale/blog/$blogId'
     | '/$locale/games/$gameId'
@@ -275,6 +287,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   XRoute: typeof XRoute
+  ApiShareImageRoute: typeof ApiShareImageRoute
   GamesGameIdRoute: typeof GamesGameIdRouteWithChildren
   UsernameArticleStatusidRoute: typeof UsernameArticleStatusidRoute
   UsernameStatusStatusidRoute: typeof UsernameStatusStatusidRoute
@@ -336,6 +349,13 @@ declare module '@tanstack/react-router' {
       path: '/games/$gameId'
       fullPath: '/games/$gameId'
       preLoaderRoute: typeof GamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/share-image': {
+      id: '/api/share-image'
+      path: '/api/share-image'
+      fullPath: '/api/share-image'
+      preLoaderRoute: typeof ApiShareImageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$locale/terms-of-service': {
@@ -491,6 +511,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   XRoute: XRoute,
+  ApiShareImageRoute: ApiShareImageRoute,
   GamesGameIdRoute: GamesGameIdRouteWithChildren,
   UsernameArticleStatusidRoute: UsernameArticleStatusidRoute,
   UsernameStatusStatusidRoute: UsernameStatusStatusidRoute,

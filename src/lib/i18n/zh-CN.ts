@@ -60,6 +60,13 @@ export const zhCnMessages = {
   detail: {
     home: '游戏库',
     play: '开始游戏',
+    share: '分享',
+    generatePoster: '生成海报',
+    systemShare: '系统分享',
+    posterTitle: '分享海报',
+    downloadPoster: '下载海报',
+    posterScanCta: '扫码立即游戏，无需下载',
+    shareUnavailableCopied: '当前浏览器不支持系统分享，链接已复制。',
     overview: '游戏简介',
     keywords: '关键词',
     howToPlay: '玩法指南',
