@@ -21,6 +21,20 @@ function getDefaultSocialImage(origin?: string) {
   return origin ? `${origin}${defaultSocialImagePath}` : defaultSocialImagePath
 }
 
+function getPwaInstallInitScript() {
+  return `
+    window.__GGEMU_INSTALL_PROMPT__=null;
+    window.addEventListener('beforeinstallprompt',function(event){
+      event.preventDefault();
+      window.__GGEMU_INSTALL_PROMPT__=event;
+      window.dispatchEvent(new Event('ggemu:installprompt'));
+    });
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('/sw.js').catch(function(){});
+    }
+  `
+}
+
 export const Route = createRootRoute({
   loader: () => getSeoOrigin(),
   head: ({ loaderData }) => {
@@ -237,6 +251,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <script
           dangerouslySetInnerHTML={{
             __html: getSiteThemeInitScript(),
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: getPwaInstallInitScript(),
           }}
         />
         <HeadContent />

@@ -61,6 +61,20 @@ export const jaMessages = {
   detail: {
     home: 'ゲーム',
     play: '今すぐプレイ',
+    install: 'ダウンロード',
+    installUnavailable:
+      'インストールを準備中です。ブラウザーに表示されない場合は、このページを再読み込みしてもう一度お試しください。',
+    installDismissed: 'インストールをキャンセルしました。',
+    installGuideTitle: 'このゲームをホーム画面に追加',
+    installGuideIntro:
+      'ブラウザーのインストール画面が表示されませんでした。手動で追加できます。',
+    installGuideIos:
+      'iPhone または iPad: Safari でこのページを開き、共有ボタンをタップして「ホーム画面に追加」を選びます。',
+    installGuideAndroid:
+      'Android: Chrome でこのページを開き、メニューまたは共有ボタンをタップして「アプリをインストール」または「ホーム画面に追加」を選びます。',
+    installGuideDesktop:
+      'デスクトップ版 Chrome または Edge: アドレスバーのインストールアイコン、またはブラウザーメニューから「アプリをインストール」を選びます。',
+    installGuideClose: '閉じる',
     share: '共有',
     generatePoster: 'ポスターを生成',
     systemShare: 'システム共有',

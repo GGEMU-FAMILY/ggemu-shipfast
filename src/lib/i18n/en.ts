@@ -65,6 +65,20 @@ export const enMessages = {
   detail: {
     home: 'Games',
     play: 'Play Now',
+    install: 'Download',
+    installUnavailable:
+      'Install is getting ready. Refresh this page and try again if the browser does not show the prompt.',
+    installDismissed: 'Install was cancelled.',
+    installGuideTitle: 'Add this game to your home screen',
+    installGuideIntro:
+      'Your browser did not show the install prompt. You can still add this game manually.',
+    installGuideIos:
+      'iPhone or iPad: open this page in Safari, tap Share, then choose Add to Home Screen.',
+    installGuideAndroid:
+      'Android: open this page in Chrome, tap the menu or Share button, then choose Install app or Add to Home screen.',
+    installGuideDesktop:
+      'Desktop Chrome or Edge: use the install icon in the address bar, or open the browser menu and choose Install app.',
+    installGuideClose: 'Got it',
     share: 'Share',
     generatePoster: 'Generate Poster',
     systemShare: 'System Share',

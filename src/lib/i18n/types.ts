@@ -49,6 +49,15 @@ export type I18nMessages = {
   detail: {
     home: string
     play: string
+    install: string
+    installUnavailable: string
+    installDismissed: string
+    installGuideTitle: string
+    installGuideIntro: string
+    installGuideIos: string
+    installGuideAndroid: string
+    installGuideDesktop: string
+    installGuideClose: string
     share: string
     generatePoster: string
     systemShare: string

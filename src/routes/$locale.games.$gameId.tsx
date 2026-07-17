@@ -25,6 +25,15 @@ import {
 } from '#/lib/i18n'
 import { getAlternateLinksFromCanonical } from '#/lib/seo'
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
+}
+
+type InstallPromptWindow = Window & {
+  __GGEMU_INSTALL_PROMPT__?: BeforeInstallPromptEvent | null
+}
+
 export const Route = createFileRoute('/$locale/games/$gameId')({
   beforeLoad: ({ location, params }) => {
     if (location.pathname.endsWith('/play') || !location.searchStr) {
@@ -64,6 +73,7 @@ export const Route = createFileRoute('/$locale/games/$gameId')({
     const seo = buildGameDetailSeo(game, locale)
     const image = game.game_cover
     const faqItems = getGameDetailFaqs(game, locale)
+    const playPath = buildGamePlayPath(locale, params.gameId)
     const structuredData = buildGameStructuredData({
       canonicalUrl,
       faqItems,
@@ -75,6 +85,14 @@ export const Route = createFileRoute('/$locale/games/$gameId')({
     return {
       links: [
         { rel: 'canonical', href: canonicalUrl },
+        {
+          rel: 'manifest',
+          href: buildGameManifestHref({
+            description: seo.description,
+            name: game.name,
+            startUrl: playPath,
+          }),
+        },
         ...getAlternateLinksFromCanonical(canonicalUrl),
       ],
       meta: [
@@ -125,6 +143,28 @@ function getRelatedGames(
 
 function getGameRouteId(game: PublicGame) {
   return game.url_slug?.trim() || game._id?.trim() || ''
+}
+
+function buildGamePlayPath(locale: Locale, gameId: string) {
+  return `/${locale}/games/${encodeURIComponent(gameId)}/play`
+}
+
+function buildGameManifestHref({
+  description,
+  name,
+  startUrl,
+}: {
+  description: string
+  name?: string
+  startUrl: string
+}) {
+  const params = new URLSearchParams({
+    description,
+    name: name?.trim() || 'GGEMU',
+    start_url: startUrl,
+  })
+
+  return `/manifest.webmanifest?${params.toString()}`
 }
 
 function toOpenGraphLocale(locale: Locale) {
@@ -228,6 +268,12 @@ function LocalizedGameDetailPage() {
   const categories = game.categories ?? []
   const languages = game.languages ?? []
   const faqItems = getGameDetailFaqs(game, lang)
+  const playPath = buildGamePlayPath(lang, gameId)
+  const manifestHref = buildGameManifestHref({
+    description: buildGameDetailSeo(game, lang).description,
+    name: game.name,
+    startUrl: playPath,
+  })
 
   if (pathname.endsWith('/play')) {
     return <Outlet />
@@ -298,7 +344,7 @@ function LocalizedGameDetailPage() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
                   className="btn btn-primary btn-lg px-8 text-primary-content hover:text-primary-content"
-                  href={`/${lang}/games/${gameId}/play`}
+                  href={playPath}
                   onClick={() => saveRecentPlayedGame(game, gameId)}
                   rel="noreferrer"
                   target="_blank"
@@ -306,6 +352,7 @@ function LocalizedGameDetailPage() {
                   <i className="ri-play-fill text-xl" />
                   {t.play}
                 </a>
+                <GameInstallButton labels={t} manifestHref={manifestHref} />
                 <GameShareActions
                   canonicalUrl={canonicalUrl}
                   game={game}
@@ -358,6 +405,173 @@ function LocalizedGameDetailPage() {
       </div>
     </SiteLayout>
   )
+}
+
+function GameInstallButton({
+  labels,
+  manifestHref,
+}: {
+  labels: ReturnType<typeof getI18n>['detail']
+  manifestHref: string
+}) {
+  const [installPrompt, setInstallPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null)
+  const [isGuideOpen, setIsGuideOpen] = useState(false)
+  const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    syncManifestLink(manifestHref)
+    setStoredInstallPrompt(setInstallPrompt)
+
+    function handleBeforeInstallPrompt(event: Event) {
+      event.preventDefault()
+      const prompt = event as BeforeInstallPromptEvent
+
+      ;(window as InstallPromptWindow).__GGEMU_INSTALL_PROMPT__ = prompt
+      setInstallPrompt(prompt)
+      setIsGuideOpen(false)
+      setMessage('')
+    }
+
+    function handleStoredInstallPrompt() {
+      setStoredInstallPrompt(setInstallPrompt)
+      setIsGuideOpen(false)
+      setMessage('')
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('ggemu:installprompt', handleStoredInstallPrompt)
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('ggemu:installprompt', handleStoredInstallPrompt)
+    }
+  }, [manifestHref])
+
+  async function handleInstall() {
+    setMessage('')
+
+    if (!installPrompt) {
+      setIsGuideOpen(true)
+      return
+    }
+
+    await installPrompt.prompt()
+    const choice = await installPrompt.userChoice
+
+    ;(window as InstallPromptWindow).__GGEMU_INSTALL_PROMPT__ = null
+    setInstallPrompt(null)
+
+    if (choice.outcome === 'dismissed') {
+      setMessage(labels.installDismissed)
+    }
+  }
+
+  return (
+    <>
+      <button
+        className="btn btn-outline btn-lg px-5"
+        onClick={() => void handleInstall()}
+        type="button"
+      >
+        <i className="ri-download-cloud-2-line text-xl" />
+        {labels.install}
+      </button>
+
+      {message ? (
+        <div className="toast toast-top toast-center z-50">
+          <div className="alert alert-info py-2 text-sm">{message}</div>
+        </div>
+      ) : null}
+
+      {isGuideOpen ? (
+        <InstallGuideModal labels={labels} onClose={() => setIsGuideOpen(false)} />
+      ) : null}
+    </>
+  )
+}
+
+function setStoredInstallPrompt(
+  setInstallPrompt: (prompt: BeforeInstallPromptEvent | null) => void,
+) {
+  setInstallPrompt((window as InstallPromptWindow).__GGEMU_INSTALL_PROMPT__ ?? null)
+}
+
+function InstallGuideModal({
+  labels,
+  onClose,
+}: {
+  labels: ReturnType<typeof getI18n>['detail']
+  onClose: () => void
+}) {
+  return (
+    <div className="modal modal-open">
+      <div className="modal-box max-w-md">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold">{labels.installGuideTitle}</h2>
+            <p className="mt-2 text-sm leading-6 text-base-content/70">
+              {labels.installGuideIntro}
+            </p>
+          </div>
+          <button
+            aria-label="Close"
+            className="btn btn-ghost btn-sm btn-circle"
+            onClick={onClose}
+            type="button"
+          >
+            <i className="ri-close-line text-xl" />
+          </button>
+        </div>
+
+        <div className="mt-5 grid gap-3 text-sm">
+          <InstallGuideStep icon="ri-share-forward-line" text={labels.installGuideIos} />
+          <InstallGuideStep icon="ri-more-2-fill" text={labels.installGuideAndroid} />
+          <InstallGuideStep icon="ri-computer-line" text={labels.installGuideDesktop} />
+        </div>
+
+        <div className="modal-action">
+          <button className="btn btn-primary" onClick={onClose} type="button">
+            {labels.installGuideClose}
+          </button>
+        </div>
+      </div>
+      <button
+        aria-label="Close"
+        className="modal-backdrop"
+        onClick={onClose}
+        type="button"
+      />
+    </div>
+  )
+}
+
+function InstallGuideStep({ icon, text }: { icon: string; text: string }) {
+  return (
+    <div className="flex gap-3 rounded-box border border-base-300 bg-base-200/60 p-3">
+      <i className={`${icon} mt-0.5 text-lg text-primary`} />
+      <p className="leading-6 text-base-content/80">{text}</p>
+    </div>
+  )
+}
+
+function syncManifestLink(href: string) {
+  const links = Array.from(
+    document.querySelectorAll<HTMLLinkElement>('link[rel="manifest"]'),
+  )
+
+  if (links.length === 0) {
+    const link = document.createElement('link')
+
+    link.rel = 'manifest'
+    link.href = href
+    document.head.append(link)
+    return
+  }
+
+  links.forEach((link) => {
+    link.href = href
+  })
 }
 
 function GameShareActions({
