@@ -34,6 +34,8 @@ type InstallPromptWindow = Window & {
   __GGEMU_INSTALL_PROMPT__?: BeforeInstallPromptEvent | null
 }
 
+const defaultManifestHref = '/manifest.webmanifest'
+
 export const Route = createFileRoute('/$locale/games/$gameId')({
   beforeLoad: ({ location, params }) => {
     if (location.pathname.endsWith('/play') || !location.searchStr) {
@@ -341,9 +343,9 @@ function LocalizedGameDetailPage() {
                 ) : null}
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="grid gap-3 sm:flex sm:flex-row">
                 <a
-                  className="btn btn-primary btn-lg px-8 text-primary-content hover:text-primary-content"
+                  className="btn btn-primary btn-lg px-8 text-primary-content hover:text-primary-content sm:w-auto"
                   href={playPath}
                   onClick={() => saveRecentPlayedGame(game, gameId)}
                   rel="noreferrer"
@@ -352,12 +354,14 @@ function LocalizedGameDetailPage() {
                   <i className="ri-play-fill text-xl" />
                   {t.play}
                 </a>
-                <GameInstallButton labels={t} manifestHref={manifestHref} />
-                <GameShareActions
-                  canonicalUrl={canonicalUrl}
-                  game={game}
-                  labels={t}
-                />
+                <div className="grid grid-cols-2 gap-3 sm:contents">
+                  <GameInstallButton labels={t} manifestHref={manifestHref} />
+                  <GameShareActions
+                    canonicalUrl={canonicalUrl}
+                    game={game}
+                    labels={t}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-left sm:max-w-md sm:gap-6">
@@ -445,6 +449,7 @@ function GameInstallButton({
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       window.removeEventListener('ggemu:installprompt', handleStoredInstallPrompt)
+      syncManifestLink(defaultManifestHref)
     }
   }, [manifestHref])
 
@@ -470,7 +475,7 @@ function GameInstallButton({
   return (
     <>
       <button
-        className="btn btn-outline btn-lg px-5"
+        className="btn btn-outline btn-lg w-full px-5 sm:w-auto"
         onClick={() => void handleInstall()}
         type="button"
       >
@@ -656,7 +661,7 @@ function GameShareActions({
   return (
     <>
       <details className="dropdown" ref={dropdownRef}>
-        <summary className="btn btn-outline btn-lg px-5">
+        <summary className="btn btn-outline btn-lg w-full px-5 sm:w-auto">
           <i className="ri-share-line text-xl" />
           {labels.share}
         </summary>

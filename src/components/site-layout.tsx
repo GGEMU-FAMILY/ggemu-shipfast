@@ -82,19 +82,23 @@ export function SiteLayout({
       <header className="sticky top-0 z-40 border-b border-base-300/70 bg-base-100/90 backdrop-blur">
         <div className="navbar mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="navbar-start">
-            <Link className="flex items-center gap-3" params={{ locale }} to="/$locale">
-              <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-lg bg-base-100">
+            <Link
+              className="flex min-w-0 items-center gap-3"
+              params={{ locale }}
+              to="/$locale"
+            >
+              <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-base-100">
                 <img
                   alt={siteConfig.SITE_NAME}
                   className="h-full w-full object-contain"
                   src="/logo.png"
                 />
               </span>
-              <span className="leading-tight">
+              <span className="min-w-0 leading-tight">
                 <span className="block text-lg font-semibold tracking-wide">
                   {siteConfig.SITE_NAME}
                 </span>
-                <span className="block text-xs text-base-content/55">
+                <span className="block truncate text-xs text-base-content/55">
                   {siteConfig.SITE_SLOGAN}
                 </span>
               </span>

@@ -167,11 +167,11 @@ function MaintenanceErrorComponent() {
               className="h-12 w-12 rounded-xl object-contain"
               src="/logo.png"
             />
-            <div>
+            <div className="min-w-0">
               <h1 className="text-xl font-semibold leading-tight">
                 {siteConfig.SITE_NAME}
               </h1>
-              <p className="text-sm font-medium text-primary">
+              <p className="truncate text-sm font-medium text-primary">
                 {siteConfig.SITE_SLOGAN}
               </p>
             </div>
@@ -198,7 +198,7 @@ function MaintenanceErrorComponent() {
         <h1 className="mt-5 text-3xl font-semibold leading-tight sm:text-4xl">
           {siteConfig.SITE_NAME}
         </h1>
-        <p className="mt-2 text-base font-medium text-primary">
+        <p className="mt-2 max-w-full truncate text-base font-medium text-primary">
           {siteConfig.SITE_SLOGAN}
         </p>
         <h2 className="mt-8 text-2xl font-semibold leading-tight sm:text-3xl">
