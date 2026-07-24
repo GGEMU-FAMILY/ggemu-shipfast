@@ -305,7 +305,10 @@ function LocalizedGameDetailPage() {
           </section>
 
           <section className="grid gap-4 lg:grid-cols-[minmax(320px,440px)_1fr] lg:gap-8">
-            <div className="aspect-[4/3] w-full self-start overflow-hidden rounded-box border border-base-300 bg-base-200 shadow-sm">
+            <div
+              className="group relative aspect-[4/3] w-full self-start overflow-hidden rounded-box border border-base-300 bg-base-200 shadow-sm"
+              {...gameCardPreviewHandlers}
+            >
               {game.game_cover ? (
                 <img
                   alt={game.name ?? 'Game cover'}
@@ -317,6 +320,7 @@ function LocalizedGameDetailPage() {
                   Retro
                 </div>
               )}
+              <GameCardPreviewVideo src={game.game_video} />
             </div>
 
             <div className="flex min-w-0 flex-col justify-center gap-3 sm:gap-6 lg:self-center">
