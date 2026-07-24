@@ -1,6 +1,10 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import {
+  GameCardPreviewVideo,
+  gameCardPreviewHandlers,
+} from '#/components/game-card-preview'
 import { SiteFooter } from '#/components/site-layout'
 import type { Locale, PublicGame } from '#/lib/ggemu'
 import { siteConfig } from '#/lib/site-config'
@@ -400,11 +404,12 @@ function PokiSearchResultCard({
   return (
     <Link
       className="group overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+      {...gameCardPreviewHandlers}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
     >
-      <div className="aspect-square bg-base-200">
+      <div className="relative aspect-square overflow-hidden bg-base-200">
         {game.game_cover ? (
           <img
             alt={game.name ?? 'Game cover'}
@@ -417,6 +422,7 @@ function PokiSearchResultCard({
             Retro
           </div>
         )}
+        <GameCardPreviewVideo src={game.game_video} />
       </div>
       <div className="p-2 text-[12px] font-medium leading-tight">
         <span className="line-clamp-2">{game.name}</span>
@@ -436,30 +442,11 @@ function PokiGameCard({
 }) {
   const gameId = game.url_slug || game._id || ''
   const gameName = game.name?.trim() || 'Game'
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  function playPreviewVideo() {
-    videoRef.current?.play().catch(() => {})
-  }
-
-  function stopPreviewVideo() {
-    const video = videoRef.current
-
-    if (!video) {
-      return
-    }
-
-    video.pause()
-    video.currentTime = 0
-  }
 
   return (
     <Link
       className={`group relative overflow-hidden rounded-2xl bg-white shadow-lg transition duration-200 hover:scale-[1.03] hover:shadow-2xl ${pokiTileSizeClasses[size]}`}
-      onBlur={stopPreviewVideo}
-      onFocus={playPreviewVideo}
-      onMouseEnter={playPreviewVideo}
-      onMouseLeave={stopPreviewVideo}
+      {...gameCardPreviewHandlers}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
@@ -476,17 +463,7 @@ function PokiGameCard({
           Retro
         </div>
       )}
-      {game.game_video ? (
-        <video
-          className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          loop
-          muted
-          playsInline
-          preload="none"
-          ref={videoRef}
-          src={game.game_video}
-        />
-      ) : null}
+      <GameCardPreviewVideo src={game.game_video} />
       <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/45 to-transparent px-2 pb-2 pt-8 text-[12px] font-semibold leading-tight text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         <span className="line-clamp-2">{gameName}</span>
       </span>

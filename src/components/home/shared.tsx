@@ -1,5 +1,9 @@
 import { Link } from '@tanstack/react-router'
 
+import {
+  GameCardPreviewVideo,
+  gameCardPreviewHandlers,
+} from '#/components/game-card-preview'
 import type { BlogPost, GameSearchSort, Locale, PublicGame } from '#/lib/ggemu'
 import { formatCopy, getHomeFaqs, getI18n } from '#/lib/i18n'
 
@@ -375,6 +379,7 @@ function GameCard({ game, lang }: { game: PublicGame; lang: Locale }) {
   return (
     <Link
       className="card card-compact group h-full overflow-hidden border border-base-300 bg-base-100 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+      {...gameCardPreviewHandlers}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
@@ -392,16 +397,12 @@ function GameCard({ game, lang }: { game: PublicGame; lang: Locale }) {
             Retro
           </div>
         )}
+        <GameCardPreviewVideo src={game.game_video} />
         {platformBadge ? (
           <span className="badge badge-primary badge-sm absolute left-2 top-2 max-w-[calc(100%-1rem)] truncate border-0 shadow">
             {platformBadge}
           </span>
         ) : null}
-        <span className="absolute inset-0 grid place-items-center bg-base-300/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <span className="grid h-12 w-12 place-items-center rounded-full bg-primary text-2xl text-primary-content shadow-lg">
-            <i className="ri-play-fill text-primary-content" />
-          </span>
-        </span>
       </figure>
       <div className="card-body gap-2 p-3">
         <h3 className="line-clamp-2 min-h-11 text-sm font-semibold leading-snug">

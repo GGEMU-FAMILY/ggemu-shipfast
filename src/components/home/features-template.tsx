@@ -1,6 +1,10 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 
+import {
+  GameCardPreviewVideo,
+  gameCardPreviewHandlers,
+} from '#/components/game-card-preview'
 import { SiteLayout } from '#/components/site-layout'
 import type { Locale, PublicGame } from '#/lib/ggemu'
 
@@ -243,6 +247,7 @@ function FeatureGameCard({
   return (
     <Link
       className={`group relative aspect-[4/3] shrink-0 overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm transition duration-200 hover:z-10 hover:border-primary/40 hover:shadow-lg ${isHeroCard ? 'w-[320px] sm:w-[520px]' : 'w-[154px] sm:w-[248px]'}`}
+      {...gameCardPreviewHandlers}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
@@ -259,6 +264,8 @@ function FeatureGameCard({
           Retro
         </div>
       )}
+
+      <GameCardPreviewVideo src={game.game_video} />
 
       <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
       <span className="absolute inset-x-0 bottom-0 px-3 pb-3 pt-10 text-sm font-black leading-tight text-white">

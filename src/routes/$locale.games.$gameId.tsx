@@ -9,6 +9,10 @@ import {
 import QRCode from 'qrcode'
 import { useEffect, useRef, useState } from 'react'
 
+import {
+  GameCardPreviewVideo,
+  gameCardPreviewHandlers,
+} from '#/components/game-card-preview'
 import { SiteLayout } from '#/components/site-layout'
 import { saveRecentPlayedGame } from '#/components/home/recent-played-games'
 import {
@@ -1217,11 +1221,12 @@ function RelatedGameCard({ game, lang }: { game: PublicGame; lang: Locale }) {
   return (
     <Link
       className="group overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+      {...gameCardPreviewHandlers}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
     >
-      <div className="aspect-[4/3] bg-base-300">
+      <div className="relative aspect-[4/3] overflow-hidden bg-base-300">
         {game.game_cover ? (
           <img
             alt={game.name ?? 'Game cover'}
@@ -1234,6 +1239,7 @@ function RelatedGameCard({ game, lang }: { game: PublicGame; lang: Locale }) {
             Retro
           </div>
         )}
+        <GameCardPreviewVideo src={game.game_video} />
       </div>
       <div className="p-3">
         <h3 className="line-clamp-2 min-h-10 text-sm font-semibold leading-snug">

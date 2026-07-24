@@ -1,6 +1,10 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 
+import {
+  GameCardPreviewVideo,
+  gameCardPreviewHandlers,
+} from '#/components/game-card-preview'
 import { SiteLayout } from '#/components/site-layout'
 import {
   getGameDetail,
@@ -354,10 +358,11 @@ function LinkedGameCard({
   return (
     <Link
       className="group grid gap-4 rounded-box border border-base-300 bg-base-100 p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg sm:grid-cols-[160px_1fr]"
+      {...gameCardPreviewHandlers}
       params={{ gameId, locale }}
       to="/$locale/games/$gameId"
     >
-      <div className="aspect-[4/3] overflow-hidden rounded-lg bg-base-300">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-base-300">
         {game?.game_cover ? (
           <img
             alt={title}
@@ -370,6 +375,7 @@ function LinkedGameCard({
             Game
           </div>
         )}
+        <GameCardPreviewVideo src={game?.game_video} />
       </div>
       <div className="min-w-0 self-center">
         <p className="text-xs font-semibold uppercase tracking-wide text-primary">

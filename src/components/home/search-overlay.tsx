@@ -3,6 +3,10 @@ import { useServerFn } from '@tanstack/react-start'
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 
+import {
+  GameCardPreviewVideo,
+  gameCardPreviewHandlers,
+} from '#/components/game-card-preview'
 import type { GameFilterOptions, GameSearchResult, Locale, PublicGame } from '#/lib/ggemu'
 import { searchGames } from '#/lib/ggemu'
 
@@ -161,11 +165,12 @@ function SearchResultCard({
   return (
     <Link
       className="group overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+      {...gameCardPreviewHandlers}
       params={{ gameId, locale: lang }}
       search={{}}
       to="/$locale/games/$gameId"
     >
-      <div className="aspect-square bg-base-200">
+      <div className="relative aspect-square overflow-hidden bg-base-200">
         {game.game_cover ? (
           <img
             alt={game.name ?? 'Game cover'}
@@ -178,6 +183,7 @@ function SearchResultCard({
             Retro
           </div>
         )}
+        <GameCardPreviewVideo src={game.game_video} />
       </div>
       <div className="p-2 text-[12px] font-medium leading-tight">
         <span className="line-clamp-2">{game.name}</span>
