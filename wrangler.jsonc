@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ggemu-shipfast",
+  "name": "ggemu-shipfast-3",
   "keep_vars": true,
   "compatibility_date": "2026-07-01",
   "compatibility_flags": ["nodejs_compat"],
