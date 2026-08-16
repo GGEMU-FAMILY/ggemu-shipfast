@@ -40,7 +40,7 @@ function LocalizedPlayGamePage() {
   const game = Route.useLoaderData()
   const { gameId, locale } = Route.useParams()
   const lang = normalizeLocale(locale)
-  const embedId = encodeURIComponent(game._id || game.url_slug || gameId)
+  const embedId = encodeURIComponent(game.url_slug || game._id || gameId)
   const refcode = encodeURIComponent(siteConfig.GGEMU_REFCODE)
   const isPsp = isPspGame(game)
   const theme = useCurrentSiteTheme()
