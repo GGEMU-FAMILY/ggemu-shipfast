@@ -158,7 +158,11 @@ export const Route = createFileRoute('/$locale')({
       seoOrigin,
     }
   },
-  head: ({ loaderData, params, match }) => {
+  head: ({ loaderData, params, match, matches }) => {
+    if (matches.at(-1)?.routeId !== match.routeId) {
+      return {}
+    }
+
     const data = loaderData as unknown as HomeLoaderData | undefined
     const locale = normalizeLocale(params.locale)
     const meta = getI18n(locale).homeSeo

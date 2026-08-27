@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { fetchGameDeals } from '#/lib/game-deals.server'
+import { DEFAULT_DEAL_REGION } from '#/lib/game-deals-region'
 import type { BlogPost, Locale, PublicGame } from '#/lib/ggemu'
 
 const GGEMU_API_BASE_URL = 'https://ggemu.com'
@@ -63,6 +65,7 @@ async function getSitemapXml(origin: string) {
 
   let games: Array<PublicGame> = []
   let blogPosts: Array<BlogPost> = []
+  const dealsPromise = fetchGameDeals('en', DEFAULT_DEAL_REGION).catch(() => null)
 
   try {
     ;[games, blogPosts] = await Promise.all([
@@ -75,7 +78,15 @@ async function getSitemapXml(origin: string) {
     }
   }
 
-  const entries = buildSitemapEntries(origin, games, blogPosts)
+  const dealsResult = await dealsPromise
+
+  const entries = buildSitemapEntries(
+    origin,
+    games,
+    blogPosts,
+    dealsResult?.deals.map((deal) => deal.steamAppId) ?? [],
+    dealsResult?.updatedAt,
+  )
   const xml = buildSitemapXml(entries)
 
   sitemapCache = {
@@ -180,10 +191,19 @@ function buildSitemapEntries(
   origin: string,
   games: Array<PublicGame>,
   blogPosts: Array<BlogPost>,
+  dealSteamAppIds: Array<number>,
+  dealsUpdatedAt?: string,
 ) {
   const entries: Array<SitemapEntry> = []
 
   for (const locale of locales) {
+    entries.push({
+      locale,
+      loc: toAbsoluteLocalizedUrl(origin, locale, '/deals'),
+      path: '/deals',
+      changefreq: 'daily',
+      priority: 0.8,
+    })
     entries.push({
       locale,
       loc: toAbsoluteLocalizedUrl(origin, locale, '/'),
@@ -230,6 +250,19 @@ function buildSitemapEntries(
         path,
         changefreq: 'weekly',
         priority: 0.8,
+      })
+    }
+
+    for (const steamAppId of dealSteamAppIds) {
+      const path = `/deals/steam/${steamAppId}`
+
+      entries.push({
+        locale,
+        loc: toAbsoluteLocalizedUrl(origin, locale, path),
+        path,
+        changefreq: 'daily',
+        lastmod: dealsUpdatedAt,
+        priority: 0.7,
       })
     }
 

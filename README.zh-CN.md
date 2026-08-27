@@ -355,6 +355,7 @@ ShipFast 面向 Cloudflare Workers 设计。
 | `SITE_TEMPLATE` | 布局模板 |
 | `SITE_THEMES` | 主题配色配置 |
 | `GGEMU_REFCODE` | 用于归因的 RefCode |
+| `GG_DEALS_API_KEY` | 用于全网比价的服务端 GG.deals API Key |
 | `GOOGLE_ADSENSE_CLIENT` | Google AdSense client ID |
 | `GOOGLE_ANALYTICS_ID` | Google Analytics ID |
 

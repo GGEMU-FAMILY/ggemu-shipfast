@@ -4,6 +4,7 @@ import type { HomeFaqs, I18nMessages } from './types'
 export const enMessages = {
   layout: {
     games: 'Home',
+    deals: 'Game Deals',
     live: 'Live',
     explore: 'Explore',
     playMyRom: 'Play My ROM',
@@ -22,6 +23,45 @@ export const enMessages = {
     },
     footer:
       'Play classic retro games directly in your browser. No downloads required.',
+  },
+  deals: {
+    seoTitle: 'Steam Game Deals and Historical Low Prices | GGEMU',
+    title: 'Popular Game Deals',
+    description:
+      'Browse featured Steam game deals with current prices, discount percentages, and historical lows.',
+    eyebrow: 'On Sale Now',
+    regionLabel: 'Region and currency',
+    regionUs: 'United States',
+    regionJp: 'Japan',
+    regionCn: 'China',
+    regionGb: 'United Kingdom',
+    regionDe: 'Germany',
+    regionTh: 'Thailand',
+    updated: 'Updated {time}',
+    steamReference: 'Current Steam reference price',
+    historicalLowest: 'Historical low',
+    historicalLowNow: 'Current historical low',
+    viewDetails: 'View game details',
+    backToDeals: 'Back to game deals',
+    detailSeoTitle: '{name} Steam Deal, Current Price and Historical Low | GGEMU',
+    detailSeoDescription:
+      '{name} is {price} on Steam with {discount}% off; historical low: {historicalLow}. See screenshots, publisher, platforms, and game details.',
+    overview: 'Overview',
+    gameInfo: 'Game information',
+    developer: 'Developer',
+    publisher: 'Publisher',
+    releaseDate: 'Release date',
+    genres: 'Genres',
+    platforms: 'Platforms',
+    languages: 'Languages',
+    screenshots: 'Screenshots',
+    buyOnSteam: 'View on Steam',
+    priceSummary: 'Prices and purchase',
+    free: 'Free',
+    notFound: 'This deal could not be found. It may be unavailable or no longer listed.',
+    noData: 'No data',
+    empty: 'No game deals are available right now. Please try again later.',
+    attribution: 'Deal and price data provided by',
   },
   home: {
     get title() {

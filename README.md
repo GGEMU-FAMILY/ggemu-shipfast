@@ -355,6 +355,7 @@ Runtime environment variables with the same names take priority over `siteconfig
 | `SITE_TEMPLATE` | Layout template |
 | `SITE_THEMES` | Theme color configuration |
 | `GGEMU_REFCODE` | RefCode for attribution |
+| `GG_DEALS_API_KEY` | Server-only GG.deals API key for cross-store price comparison |
 | `GOOGLE_ADSENSE_CLIENT` | Google AdSense client ID |
 | `GOOGLE_ANALYTICS_ID` | Google Analytics ID |
 

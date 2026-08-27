@@ -1,6 +1,7 @@
 export type I18nMessages = {
   layout: {
     games: string
+    deals: string
     live: string
     explore: string
     playMyRom: string
@@ -14,6 +15,43 @@ export type I18nMessages = {
     copyright: string
     disclaimer: string
     footer: string
+  }
+  deals: {
+    seoTitle: string
+    title: string
+    description: string
+    eyebrow: string
+    regionLabel: string
+    regionUs: string
+    regionJp: string
+    regionCn: string
+    regionGb: string
+    regionDe: string
+    regionTh: string
+    updated: string
+    steamReference: string
+    historicalLowest: string
+    historicalLowNow: string
+    viewDetails: string
+    backToDeals: string
+    detailSeoTitle: string
+    detailSeoDescription: string
+    overview: string
+    gameInfo: string
+    developer: string
+    publisher: string
+    releaseDate: string
+    genres: string
+    platforms: string
+    languages: string
+    screenshots: string
+    buyOnSteam: string
+    priceSummary: string
+    free: string
+    notFound: string
+    noData: string
+    empty: string
+    attribution: string
   }
   home: {
     title: string

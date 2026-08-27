@@ -23,6 +23,7 @@ import { Route as LocaleRandomRouteImport } from './routes/$locale.random'
 import { Route as LocalePrivacyPolicyRouteImport } from './routes/$locale.privacy-policy'
 import { Route as LocalePlayMyRomRouteImport } from './routes/$locale.play-my-rom'
 import { Route as LocaleLiveRouteImport } from './routes/$locale.live'
+import { Route as LocaleDealsRouteImport } from './routes/$locale.deals'
 import { Route as LocaleBlogRouteImport } from './routes/$locale.blog'
 import { Route as LocaleAboutRouteImport } from './routes/$locale.about'
 import { Route as GamesGameIdPlayRouteImport } from './routes/games/$gameId/play'
@@ -31,6 +32,7 @@ import { Route as UsernameArticleStatusidRouteImport } from './routes/$username/
 import { Route as LocaleGamesGameIdRouteImport } from './routes/$locale.games.$gameId'
 import { Route as LocaleBlogBlogIdRouteImport } from './routes/$locale.blog.$blogId'
 import { Route as LocaleGamesGameIdPlayRouteImport } from './routes/$locale.games.$gameId.play'
+import { Route as LocaleDealsSteamSteamAppIdRouteImport } from './routes/$locale.deals_.steam.$steamAppId'
 
 const XRoute = XRouteImport.update({
   id: '/x',
@@ -102,6 +104,11 @@ const LocaleLiveRoute = LocaleLiveRouteImport.update({
   path: '/live',
   getParentRoute: () => LocaleRoute,
 } as any)
+const LocaleDealsRoute = LocaleDealsRouteImport.update({
+  id: '/deals',
+  path: '/deals',
+  getParentRoute: () => LocaleRoute,
+} as any)
 const LocaleBlogRoute = LocaleBlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -142,6 +149,12 @@ const LocaleGamesGameIdPlayRoute = LocaleGamesGameIdPlayRouteImport.update({
   path: '/play',
   getParentRoute: () => LocaleGamesGameIdRoute,
 } as any)
+const LocaleDealsSteamSteamAppIdRoute =
+  LocaleDealsSteamSteamAppIdRouteImport.update({
+    id: '/deals_/steam/$steamAppId',
+    path: '/deals/steam/$steamAppId',
+    getParentRoute: () => LocaleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -153,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/blog': typeof LocaleBlogRouteWithChildren
+  '/$locale/deals': typeof LocaleDealsRoute
   '/$locale/live': typeof LocaleLiveRoute
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
@@ -165,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
   '/games/$gameId/play': typeof GamesGameIdPlayRoute
+  '/$locale/deals/steam/$steamAppId': typeof LocaleDealsSteamSteamAppIdRoute
   '/$locale/games/$gameId/play': typeof LocaleGamesGameIdPlayRoute
 }
 export interface FileRoutesByTo {
@@ -177,6 +192,7 @@ export interface FileRoutesByTo {
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/blog': typeof LocaleBlogRouteWithChildren
+  '/$locale/deals': typeof LocaleDealsRoute
   '/$locale/live': typeof LocaleLiveRoute
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
@@ -189,6 +205,7 @@ export interface FileRoutesByTo {
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
   '/games/$gameId/play': typeof GamesGameIdPlayRoute
+  '/$locale/deals/steam/$steamAppId': typeof LocaleDealsSteamSteamAppIdRoute
   '/$locale/games/$gameId/play': typeof LocaleGamesGameIdPlayRoute
 }
 export interface FileRoutesById {
@@ -202,6 +219,7 @@ export interface FileRoutesById {
   '/x': typeof XRoute
   '/$locale/about': typeof LocaleAboutRoute
   '/$locale/blog': typeof LocaleBlogRouteWithChildren
+  '/$locale/deals': typeof LocaleDealsRoute
   '/$locale/live': typeof LocaleLiveRoute
   '/$locale/play-my-rom': typeof LocalePlayMyRomRoute
   '/$locale/privacy-policy': typeof LocalePrivacyPolicyRoute
@@ -214,6 +232,7 @@ export interface FileRoutesById {
   '/$username/article/$statusid': typeof UsernameArticleStatusidRoute
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
   '/games/$gameId/play': typeof GamesGameIdPlayRoute
+  '/$locale/deals_/steam/$steamAppId': typeof LocaleDealsSteamSteamAppIdRoute
   '/$locale/games/$gameId/play': typeof LocaleGamesGameIdPlayRoute
 }
 export interface FileRouteTypes {
@@ -228,6 +247,7 @@ export interface FileRouteTypes {
     | '/x'
     | '/$locale/about'
     | '/$locale/blog'
+    | '/$locale/deals'
     | '/$locale/live'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
@@ -240,6 +260,7 @@ export interface FileRouteTypes {
     | '/$username/article/$statusid'
     | '/$username/status/$statusid'
     | '/games/$gameId/play'
+    | '/$locale/deals/steam/$steamAppId'
     | '/$locale/games/$gameId/play'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -252,6 +273,7 @@ export interface FileRouteTypes {
     | '/x'
     | '/$locale/about'
     | '/$locale/blog'
+    | '/$locale/deals'
     | '/$locale/live'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
@@ -264,6 +286,7 @@ export interface FileRouteTypes {
     | '/$username/article/$statusid'
     | '/$username/status/$statusid'
     | '/games/$gameId/play'
+    | '/$locale/deals/steam/$steamAppId'
     | '/$locale/games/$gameId/play'
   id:
     | '__root__'
@@ -276,6 +299,7 @@ export interface FileRouteTypes {
     | '/x'
     | '/$locale/about'
     | '/$locale/blog'
+    | '/$locale/deals'
     | '/$locale/live'
     | '/$locale/play-my-rom'
     | '/$locale/privacy-policy'
@@ -288,6 +312,7 @@ export interface FileRouteTypes {
     | '/$username/article/$statusid'
     | '/$username/status/$statusid'
     | '/games/$gameId/play'
+    | '/$locale/deals_/steam/$steamAppId'
     | '/$locale/games/$gameId/play'
   fileRoutesById: FileRoutesById
 }
@@ -405,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleLiveRouteImport
       parentRoute: typeof LocaleRoute
     }
+    '/$locale/deals': {
+      id: '/$locale/deals'
+      path: '/deals'
+      fullPath: '/$locale/deals'
+      preLoaderRoute: typeof LocaleDealsRouteImport
+      parentRoute: typeof LocaleRoute
+    }
     '/$locale/blog': {
       id: '/$locale/blog'
       path: '/blog'
@@ -461,6 +493,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleGamesGameIdPlayRouteImport
       parentRoute: typeof LocaleGamesGameIdRoute
     }
+    '/$locale/deals_/steam/$steamAppId': {
+      id: '/$locale/deals_/steam/$steamAppId'
+      path: '/deals/steam/$steamAppId'
+      fullPath: '/$locale/deals/steam/$steamAppId'
+      preLoaderRoute: typeof LocaleDealsSteamSteamAppIdRouteImport
+      parentRoute: typeof LocaleRoute
+    }
   }
 }
 
@@ -490,23 +529,27 @@ const LocaleGamesGameIdRouteWithChildren =
 interface LocaleRouteChildren {
   LocaleAboutRoute: typeof LocaleAboutRoute
   LocaleBlogRoute: typeof LocaleBlogRouteWithChildren
+  LocaleDealsRoute: typeof LocaleDealsRoute
   LocaleLiveRoute: typeof LocaleLiveRoute
   LocalePlayMyRomRoute: typeof LocalePlayMyRomRoute
   LocalePrivacyPolicyRoute: typeof LocalePrivacyPolicyRoute
   LocaleRandomRoute: typeof LocaleRandomRoute
   LocaleTermsOfServiceRoute: typeof LocaleTermsOfServiceRoute
   LocaleGamesGameIdRoute: typeof LocaleGamesGameIdRouteWithChildren
+  LocaleDealsSteamSteamAppIdRoute: typeof LocaleDealsSteamSteamAppIdRoute
 }
 
 const LocaleRouteChildren: LocaleRouteChildren = {
   LocaleAboutRoute: LocaleAboutRoute,
   LocaleBlogRoute: LocaleBlogRouteWithChildren,
+  LocaleDealsRoute: LocaleDealsRoute,
   LocaleLiveRoute: LocaleLiveRoute,
   LocalePlayMyRomRoute: LocalePlayMyRomRoute,
   LocalePrivacyPolicyRoute: LocalePrivacyPolicyRoute,
   LocaleRandomRoute: LocaleRandomRoute,
   LocaleTermsOfServiceRoute: LocaleTermsOfServiceRoute,
   LocaleGamesGameIdRoute: LocaleGamesGameIdRouteWithChildren,
+  LocaleDealsSteamSteamAppIdRoute: LocaleDealsSteamSteamAppIdRoute,
 }
 
 const LocaleRouteWithChildren =
