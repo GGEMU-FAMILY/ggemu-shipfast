@@ -10,7 +10,7 @@ export function ThirdPartyScripts({ pathname }: Readonly<{ pathname: string }>) 
 }
 
 export function isGamePlayPath(pathname: string) {
-  return /^\/(?:[^/]+\/)?games\/[^/]+\/play\/?$/.test(pathname)
+  return /^\/(?:[^/]+\/)?games\/[^/]+\/(?:play|download)\/?$/.test(pathname)
 }
 
 function GoogleAnalytics() {

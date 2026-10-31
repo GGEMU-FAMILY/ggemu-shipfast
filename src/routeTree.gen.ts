@@ -32,6 +32,7 @@ import { Route as UsernameArticleStatusidRouteImport } from './routes/$username/
 import { Route as LocaleGamesGameIdRouteImport } from './routes/$locale.games.$gameId'
 import { Route as LocaleBlogBlogIdRouteImport } from './routes/$locale.blog.$blogId'
 import { Route as LocaleGamesGameIdPlayRouteImport } from './routes/$locale.games.$gameId.play'
+import { Route as LocaleGamesGameIdDownloadRouteImport } from './routes/$locale.games.$gameId.download'
 import { Route as LocaleDealsSteamSteamAppIdRouteImport } from './routes/$locale.deals_.steam.$steamAppId'
 
 const XRoute = XRouteImport.update({
@@ -149,6 +150,12 @@ const LocaleGamesGameIdPlayRoute = LocaleGamesGameIdPlayRouteImport.update({
   path: '/play',
   getParentRoute: () => LocaleGamesGameIdRoute,
 } as any)
+const LocaleGamesGameIdDownloadRoute =
+  LocaleGamesGameIdDownloadRouteImport.update({
+    id: '/download',
+    path: '/download',
+    getParentRoute: () => LocaleGamesGameIdRoute,
+  } as any)
 const LocaleDealsSteamSteamAppIdRoute =
   LocaleDealsSteamSteamAppIdRouteImport.update({
     id: '/deals_/steam/$steamAppId',
@@ -180,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
   '/games/$gameId/play': typeof GamesGameIdPlayRoute
   '/$locale/deals/steam/$steamAppId': typeof LocaleDealsSteamSteamAppIdRoute
+  '/$locale/games/$gameId/download': typeof LocaleGamesGameIdDownloadRoute
   '/$locale/games/$gameId/play': typeof LocaleGamesGameIdPlayRoute
 }
 export interface FileRoutesByTo {
@@ -206,6 +214,7 @@ export interface FileRoutesByTo {
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
   '/games/$gameId/play': typeof GamesGameIdPlayRoute
   '/$locale/deals/steam/$steamAppId': typeof LocaleDealsSteamSteamAppIdRoute
+  '/$locale/games/$gameId/download': typeof LocaleGamesGameIdDownloadRoute
   '/$locale/games/$gameId/play': typeof LocaleGamesGameIdPlayRoute
 }
 export interface FileRoutesById {
@@ -233,6 +242,7 @@ export interface FileRoutesById {
   '/$username/status/$statusid': typeof UsernameStatusStatusidRoute
   '/games/$gameId/play': typeof GamesGameIdPlayRoute
   '/$locale/deals_/steam/$steamAppId': typeof LocaleDealsSteamSteamAppIdRoute
+  '/$locale/games/$gameId/download': typeof LocaleGamesGameIdDownloadRoute
   '/$locale/games/$gameId/play': typeof LocaleGamesGameIdPlayRoute
 }
 export interface FileRouteTypes {
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/$username/status/$statusid'
     | '/games/$gameId/play'
     | '/$locale/deals/steam/$steamAppId'
+    | '/$locale/games/$gameId/download'
     | '/$locale/games/$gameId/play'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/$username/status/$statusid'
     | '/games/$gameId/play'
     | '/$locale/deals/steam/$steamAppId'
+    | '/$locale/games/$gameId/download'
     | '/$locale/games/$gameId/play'
   id:
     | '__root__'
@@ -313,6 +325,7 @@ export interface FileRouteTypes {
     | '/$username/status/$statusid'
     | '/games/$gameId/play'
     | '/$locale/deals_/steam/$steamAppId'
+    | '/$locale/games/$gameId/download'
     | '/$locale/games/$gameId/play'
   fileRoutesById: FileRoutesById
 }
@@ -493,6 +506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleGamesGameIdPlayRouteImport
       parentRoute: typeof LocaleGamesGameIdRoute
     }
+    '/$locale/games/$gameId/download': {
+      id: '/$locale/games/$gameId/download'
+      path: '/download'
+      fullPath: '/$locale/games/$gameId/download'
+      preLoaderRoute: typeof LocaleGamesGameIdDownloadRouteImport
+      parentRoute: typeof LocaleGamesGameIdRoute
+    }
     '/$locale/deals_/steam/$steamAppId': {
       id: '/$locale/deals_/steam/$steamAppId'
       path: '/deals/steam/$steamAppId'
@@ -516,10 +536,12 @@ const LocaleBlogRouteWithChildren = LocaleBlogRoute._addFileChildren(
 )
 
 interface LocaleGamesGameIdRouteChildren {
+  LocaleGamesGameIdDownloadRoute: typeof LocaleGamesGameIdDownloadRoute
   LocaleGamesGameIdPlayRoute: typeof LocaleGamesGameIdPlayRoute
 }
 
 const LocaleGamesGameIdRouteChildren: LocaleGamesGameIdRouteChildren = {
+  LocaleGamesGameIdDownloadRoute: LocaleGamesGameIdDownloadRoute,
   LocaleGamesGameIdPlayRoute: LocaleGamesGameIdPlayRoute,
 }
 
@@ -583,12 +605,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
